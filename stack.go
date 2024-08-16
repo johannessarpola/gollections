@@ -26,10 +26,11 @@ func (r *Stack[T]) Peek() (T, bool) {
 	)
 	b = true
 	r.mutate(func() {
-		rs = r.inner[len(r.inner)-1]
 		if r.inner == nil || len(r.inner) == 0 {
 			b = false
+			return
 		}
+		rs = r.inner[len(r.inner)-1]
 	})
 	return rs, b
 }
