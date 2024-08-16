@@ -68,16 +68,18 @@ func (l *LinkedList[T]) InsertAfter(value, newValue T) {
 }
 
 func (l *LinkedList[T]) Size() int {
-	i := 0
 
-	current := l.head
-	if current != nil {
-		i++
-		for current.next != nil {
-			current = current.next
+	i := 0
+	l.withLock(func() {
+		current := l.head
+		if current != nil {
 			i++
+			for current.next != nil {
+				current = current.next
+				i++
+			}
 		}
-	}
+	})
 
 	return i
 }
@@ -91,25 +93,40 @@ func (l *LinkedList[T]) GetLast() (T, bool) {
 	if l.head == nil {
 		return v, b
 	}
-	current := l.head
-	for current.next != nil {
-		current = current.next
-	}
-	return current.inner, true
+
+	l.withLock(func() {
+		current := l.head
+		for current.next != nil {
+			current = current.next
+		}
+		v = current.inner
+		b = true
+	})
+	return v, b
 }
 
 func (l *LinkedList[T]) Get(idx int) (T, error) {
-	i := 0
-	current := l.head
-	if current != nil {
-		for current.next != nil {
-			if i == idx {
-				return current.inner, nil
+	var (
+		v   T
+		err error
+	)
+
+	l.withLock(func() {
+		i := 0
+		current := l.head
+		if current != nil {
+			for current.next != nil {
+				if i == idx {
+					v = current.inner
+					return
+				}
+				current = current.next
+				i++
 			}
-			current = current.next
-			i++
 		}
-	}
-	var rs T
-	return rs, errors.New("index out of bounds")
+		err = errors.New("index out of bounds")
+
+	})
+
+	return v, err
 }
