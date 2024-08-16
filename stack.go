@@ -13,7 +13,7 @@ func NewStack[T any]() *Stack[T] {
 	return &Stack[T]{inner: make([]T, 0)}
 }
 
-func (r *Stack[T]) mutate(f func()) {
+func (r *Stack[T]) withLock(f func()) {
 	defer r.mu.Unlock()
 	r.mu.Lock()
 	f()
@@ -25,19 +25,17 @@ func (r *Stack[T]) Peek() (T, bool) {
 		b  bool
 	)
 	b = true
-	r.mutate(func() {
-		if r.inner == nil || len(r.inner) == 0 {
-			b = false
-			return
-		}
-		rs = r.inner[len(r.inner)-1]
-	})
+	if r.inner == nil || len(r.inner) == 0 {
+		b = false
+		return rs, b
+	}
+	rs = r.inner[len(r.inner)-1]
 	return rs, b
 }
 
 func (r *Stack[T]) Push(e T) bool {
 	b := true
-	r.mutate(func() {
+	r.withLock(func() {
 		r.inner = append(r.inner, e)
 	})
 	return b
@@ -49,7 +47,7 @@ func (r *Stack[T]) Pop() (T, bool) {
 		b  bool
 	)
 	b = true
-	r.mutate(func() {
+	r.withLock(func() {
 		if r.inner == nil || len(r.inner) == 0 {
 			b = false
 			return
