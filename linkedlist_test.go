@@ -5,11 +5,19 @@ import "testing"
 func TestLinkedList1(t *testing.T) {
 	l := NewLinkedList[int]()
 
+	if !l.IsEmpty() {
+		t.Errorf("list is not empty")
+	}
+
 	l.Append(1)
 	l.Append(2)
 	l.Append(3)
 
 	l.Prepend(99)
+
+	if l.IsEmpty() {
+		t.Errorf("list is empty")
+	}
 
 	if v, ok := l.GetLast(); v != 3 || !ok {
 		t.Errorf("expected last to be %d and %t but got %d and %t", 3, true, v, ok)

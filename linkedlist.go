@@ -67,6 +67,10 @@ func (l *LinkedList[T]) InsertAfter(value, newValue T) {
 	// TODO
 }
 
+func (l LinkedList[T]) IsEmpty() bool {
+	return l.head == nil
+}
+
 func (l *LinkedList[T]) Size() int {
 
 	i := 0
