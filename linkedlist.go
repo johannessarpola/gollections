@@ -105,7 +105,18 @@ func (l *LinkedList[T]) GetLast() (T, bool) {
 	return v, b
 }
 
-func (l *LinkedList[T]) Get(idx int) (T, error) {
+func (l *LinkedList[T]) GetFirst() (T, bool) {
+	var (
+		v T
+	)
+
+	if l.head != nil {
+		v = l.head.inner
+	}
+	return v, l.head != nil
+}
+
+func (l *LinkedList[T]) GetAt(idx int) (T, error) {
 	var (
 		v   T
 		err error

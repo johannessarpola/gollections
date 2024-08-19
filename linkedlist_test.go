@@ -15,15 +15,19 @@ func TestLinkedList1(t *testing.T) {
 		t.Errorf("expected last to be %d and %t but got %d and %t", 3, true, v, ok)
 	}
 
+	if v, ok := l.GetFirst(); v != 99 || !ok {
+		t.Errorf("expected first to be %d and %t but got %d and %t", 1, true, v, ok)
+	}
+
 	if l.Size() != 4 {
 		t.Errorf("expected size to be %d got %d", 4, l.Size())
 	}
 
-	if v, err := l.Get(0); v != 99 || err != nil {
+	if v, err := l.GetAt(0); v != 99 || err != nil {
 		t.Errorf("expected element at 0 to be %d but got %d with error %v", 99, v, err)
 	}
 
-	if _, err := l.Get(10); err == nil {
+	if _, err := l.GetAt(10); err == nil {
 		t.Error("expected error but got nil")
 	}
 
