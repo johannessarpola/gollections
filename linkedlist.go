@@ -63,12 +63,18 @@ func (l *LinkedList[T]) Prepend(value T) {
 	})
 }
 
-func (l *LinkedList[T]) InsertAfter(value, newValue T) {
-	// TODO
+func (l *LinkedList[T]) IsEmpty() bool {
+	return l.head == nil
 }
 
-func (l LinkedList[T]) IsEmpty() bool {
-	return l.head == nil
+func (l *LinkedList[T]) All(yield func(int, T) bool) {
+	i := 0
+	for current := l.head; current != nil; current = current.next {
+		if !yield(i, current.inner) {
+			break
+		}
+		i++
+	}
 }
 
 func (l *LinkedList[T]) Size() int {

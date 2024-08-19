@@ -1,6 +1,8 @@
 package gollections
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestLinkedList1(t *testing.T) {
 	l := NewLinkedList[int]()
@@ -11,7 +13,7 @@ func TestLinkedList1(t *testing.T) {
 
 	l.Append(1)
 	l.Append(2)
-	l.Append(3)
+	l.Append(77)
 
 	l.Prepend(99)
 
@@ -19,7 +21,7 @@ func TestLinkedList1(t *testing.T) {
 		t.Errorf("list is empty")
 	}
 
-	if v, ok := l.GetLast(); v != 3 || !ok {
+	if v, ok := l.GetLast(); v != 77 || !ok {
 		t.Errorf("expected last to be %d and %t but got %d and %t", 3, true, v, ok)
 	}
 
@@ -46,6 +48,16 @@ func TestLinkedList1(t *testing.T) {
 	e2, err := l.RemoveAt(10)
 	if err == nil || e2 != 0 {
 		t.Errorf("expected error but got %s", err)
+	}
+
+	count := 0
+	size := l.Size()
+	for _, _ = range l.All {
+		count++
+	}
+
+	if count != size {
+		t.Errorf("expected %d elements but got %d", size, count)
 	}
 
 }
