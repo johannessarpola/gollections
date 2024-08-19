@@ -27,4 +27,13 @@ func TestLinkedList1(t *testing.T) {
 		t.Error("expected error but got nil")
 	}
 
+	e, err := l.RemoveAt(0)
+	if err != nil || e == 0 {
+		t.Errorf("could not remove at idx %d", 0)
+	}
+	e2, err := l.RemoveAt(10)
+	if err == nil || e2 != 0 {
+		t.Errorf("expected error but got %s", err)
+	}
+
 }

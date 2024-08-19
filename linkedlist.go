@@ -130,3 +130,24 @@ func (l *LinkedList[T]) Get(idx int) (T, error) {
 
 	return v, err
 }
+
+func (l LinkedList[T]) RemoveAt(idx int) (T, error) {
+	var (
+		v   T
+		err error
+	)
+	l.withLock(func() {
+		i := 0
+		for current := l.head; current != nil; current = current.next {
+			if i == idx {
+				v = current.inner
+				return
+			}
+			i++
+
+		}
+		err = errors.New("index out of bounds")
+	})
+
+	return v, err
+}
