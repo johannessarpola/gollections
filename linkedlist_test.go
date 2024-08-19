@@ -60,4 +60,9 @@ func TestLinkedList1(t *testing.T) {
 		t.Errorf("expected %d elements but got %d", size, count)
 	}
 
+	c := l.Contains(99)
+	if c != true {
+		t.Errorf("expected element to be contained but got %t", c)
+	}
+
 }

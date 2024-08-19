@@ -5,24 +5,24 @@ import (
 	"sync"
 )
 
-type Node[T any] struct {
+type Node[T comparable] struct {
 	inner T
 	next  *Node[T]
 }
 
-func NewNode[T any](value T) Node[T] {
+func NewNode[T comparable](value T) Node[T] {
 	return Node[T]{
 		inner: value,
 		next:  nil,
 	}
 }
 
-type LinkedList[T any] struct {
+type LinkedList[T comparable] struct {
 	head *Node[T]
 	mu   sync.Mutex
 }
 
-func NewLinkedList[T any]() *LinkedList[T] {
+func NewLinkedList[T comparable]() *LinkedList[T] {
 	return &LinkedList[T]{
 		head: nil,
 		mu:   sync.Mutex{},
@@ -33,6 +33,18 @@ func (r *LinkedList[T]) withLock(f func()) {
 	defer r.mu.Unlock()
 	r.mu.Lock()
 	f()
+}
+
+func (l *LinkedList[T]) Contains(value T) bool {
+	b := false
+	l.withLock(func() {
+		for current := l.head; current != nil; current = current.next {
+			if current.inner != value {
+				b = true
+			}
+		}
+	})
+	return b
 }
 
 func (l *LinkedList[T]) Append(value T) {
@@ -69,12 +81,14 @@ func (l *LinkedList[T]) IsEmpty() bool {
 
 func (l *LinkedList[T]) All(yield func(int, T) bool) {
 	i := 0
-	for current := l.head; current != nil; current = current.next {
-		if !yield(i, current.inner) {
-			break
+	l.withLock(func() {
+		for current := l.head; current != nil; current = current.next {
+			if !yield(i, current.inner) {
+				break
+			}
+			i++
 		}
-		i++
-	}
+	})
 }
 
 func (l *LinkedList[T]) Size() int {
@@ -118,12 +132,20 @@ func (l *LinkedList[T]) GetLast() (T, bool) {
 func (l *LinkedList[T]) GetFirst() (T, bool) {
 	var (
 		v T
+		b bool
 	)
+
+	l.withLock(func() {
+		if l.head != nil {
+			v = l.head.inner
+		}
+		b = l.head != nil
+	})
 
 	if l.head != nil {
 		v = l.head.inner
 	}
-	return v, l.head != nil
+	return v, b
 }
 
 func (l *LinkedList[T]) GetAt(idx int) (T, error) {
