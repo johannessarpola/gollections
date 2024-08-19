@@ -39,8 +39,9 @@ func (l *LinkedList[T]) Contains(value T) bool {
 	b := false
 	l.withLock(func() {
 		for current := l.head; current != nil; current = current.next {
-			if current.inner != value {
+			if current.inner == value {
 				b = true
+				return
 			}
 		}
 	})
