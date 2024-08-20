@@ -68,6 +68,28 @@ func (l *LinkedList[T]) Append(value T) {
 	}
 }
 
+func (l *LinkedList[T]) InsertAt(index int, value T) error {
+	n := NewNode(value)
+	var err error
+	l.withLock(func() {
+		if index == 0 {
+			n.next, l.head = l.head, &n
+		} else {
+			current, next := l.head, l.head
+			for index > 0 {
+				current, next, index = next, next.next, index-1
+				if next == nil { // Handle index out of bounds
+					err = errors.New("index out of bounds")
+					return
+				}
+			}
+
+			current.next, n.next = &n, next
+		}
+	})
+	return err
+}
+
 func (l *LinkedList[T]) Prepend(value T) {
 	n := NewNode(value)
 	l.withLock(func() {
@@ -149,7 +171,7 @@ func (l *LinkedList[T]) GetFirst() (T, bool) {
 	return v, b
 }
 
-func (l *LinkedList[T]) GetAt(idx int) (T, error) {
+func (l *LinkedList[T]) GetAt(index int) (T, error) {
 	var (
 		v   T
 		err error
@@ -157,19 +179,14 @@ func (l *LinkedList[T]) GetAt(idx int) (T, error) {
 
 	l.withLock(func() {
 		i := 0
-		current := l.head
-		if current != nil {
-			for current.next != nil {
-				if i == idx {
-					v = current.inner
-					return
-				}
-				current = current.next
-				i++
+		for current := l.head; current != nil; current = current.next {
+			if i == index {
+				v = current.inner
+				return
 			}
+			i++
 		}
-		err = errors.New("index out of bounds")
-
+		err = errors.New("index out of range")
 	})
 
 	return v, err
@@ -181,14 +198,24 @@ func (l *LinkedList[T]) RemoveAt(idx int) (T, error) {
 		err error
 	)
 	l.withLock(func() {
+
+		if idx == 0 {
+			h := l.head
+			v = h.inner
+			l.head = h.next
+			return
+		}
+
 		i := 0
+		prev := l.head
 		for current := l.head; current != nil; current = current.next {
 			if i == idx {
 				v = current.inner
+				prev.next = current.next
 				return
 			}
+			prev = current
 			i++
-
 		}
 		err = errors.New("index out of bounds")
 	})

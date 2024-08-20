@@ -45,6 +45,12 @@ func TestLinkedList1(t *testing.T) {
 	if err != nil || e == 0 {
 		t.Errorf("could not remove at idx %d", 0)
 	}
+
+	c := l.Contains(99)
+	if c == true {
+		t.Errorf("expected removed element to not be contained but got %t", c)
+	}
+
 	e2, err := l.RemoveAt(10)
 	if err == nil || e2 != 0 {
 		t.Errorf("expected error but got %s", err)
@@ -60,13 +66,41 @@ func TestLinkedList1(t *testing.T) {
 		t.Errorf("expected %d elements but got %d", size, count)
 	}
 
-	c := l.Contains(99)
-	if c != true {
-		t.Errorf("expected element to be contained but got %t", c)
-	}
-
 	c2 := l.Contains(-99)
 	if c2 == true {
 		t.Errorf("expected element to be not contained but got %t", c2)
 	}
+
+	err = l.InsertAt(0, -66)
+	if err != nil {
+		t.Error("expected no error but got ", err)
+	}
+
+	if v, ok := l.GetFirst(); v != -66 || !ok {
+		t.Errorf("expected first element to be %d and %t but got %d and %t", -66, true, v, ok)
+	}
+
+	c3 := l.Contains(-66)
+	if c3 != true {
+		t.Errorf("expected element to be contained but got %t", c3)
+	}
+
+	if v, ok := l.GetFirst(); v != -66 || !ok {
+		t.Errorf("expected first to be %d but got %d and %t", -66, v, ok)
+	}
+
+	err = l.InsertAt(3, 55)
+	if err != nil {
+		t.Error("expected no error but got ", err)
+	}
+
+	if v, err := l.GetAt(3); v != 55 || err != nil {
+		t.Errorf("expected %d to be %d but got %d and %s", 3, 55, v, err)
+	}
+
+	err = l.InsertAt(99, 33)
+	if err == nil {
+		t.Error("expected error but got nil")
+	}
+
 }
