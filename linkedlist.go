@@ -175,7 +175,7 @@ func (l *LinkedList[T]) GetAt(idx int) (T, error) {
 	return v, err
 }
 
-func (l LinkedList[T]) RemoveAt(idx int) (T, error) {
+func (l *LinkedList[T]) RemoveAt(idx int) (T, error) {
 	var (
 		v   T
 		err error
