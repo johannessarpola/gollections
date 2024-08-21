@@ -103,4 +103,13 @@ func TestLinkedList1(t *testing.T) {
 		t.Error("expected error but got nil")
 	}
 
+	l.Prepend(22)
+	if v, b := l.Dequeue(); v != 22 || !b {
+		t.Errorf("expected element to be %d but got %d and %t", 22, v, b)
+	}
+
+	if v, b := l.GetFirst(); v == 22 || !b {
+		t.Errorf("expected element to not be %d but got %d and %t", 22, v, b)
+	}
+
 }

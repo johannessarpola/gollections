@@ -159,13 +159,10 @@ func (l *LinkedList[T]) GetFirst() (T, bool) {
 	l.withLock(func() {
 		if l.head != nil {
 			v = l.head.inner
+			b = true
 		}
-		b = l.head != nil
 	})
 
-	if l.head != nil {
-		v = l.head.inner
-	}
 	return v, b
 }
 
@@ -190,20 +187,39 @@ func (l *LinkedList[T]) GetAt(index int) (T, error) {
 	return v, err
 }
 
+func (l *LinkedList[T]) Dequeue() (T, bool) {
+	var (
+		v T
+		b bool
+	)
+	l.withLock(func() {
+		current := l.head
+		if current != nil {
+			v = current.inner
+			b = true
+			l.head = current.next
+		}
+
+	})
+	return v, b
+}
+
 func (l *LinkedList[T]) RemoveAt(idx int) (T, error) {
 	var (
 		v   T
 		err error
+		b   bool
 	)
-	l.withLock(func() {
 
-		if idx == 0 {
-			h := l.head
-			v = h.inner
-			l.head = h.next
-			return
+	if idx == 0 {
+		v, b = l.Dequeue()
+		if !b {
+			err = errors.New("index out of bounds")
 		}
+		return v, err
+	}
 
+	l.withLock(func() {
 		i := 0
 		prev := l.head
 		for current := l.head; current != nil; current = current.next {
