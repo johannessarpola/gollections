@@ -50,22 +50,20 @@ func (l *LinkedList[T]) Contains(value T) bool {
 
 func (l *LinkedList[T]) Append(value T) {
 	n := NewNode(value)
+	l.withLock(func() {
 
-	if l.head == nil {
-		l.withLock(func() {
-			if l.head == nil {
-				l.head = &n
-			}
-		})
-	} else {
-		l.withLock(func() {
-			current := l.head
-			for current.next != nil {
-				current = current.next
-			}
-			current.next = &n
-		})
-	}
+		if l.head == nil {
+			l.head = &n
+			return
+		}
+
+		current := l.head
+		for current.next != nil {
+			current = current.next
+		}
+		current.next = &n
+	})
+
 }
 
 func (l *LinkedList[T]) InsertAt(index int, value T) error {
