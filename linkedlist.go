@@ -187,6 +187,27 @@ func (l *LinkedList[T]) GetAt(index int) (T, error) {
 	return v, err
 }
 
+func (l *LinkedList[T]) Pop() (T, bool) {
+	var (
+		v T
+		b bool
+	)
+
+	l.withLock(func() {
+		prev, current := l.head, l.head
+		for current.next != nil {
+			prev = current
+			current = current.next
+		}
+		prev.next = nil
+		v = current.inner
+		b = true
+
+	})
+
+	return v, b
+}
+
 func (l *LinkedList[T]) Dequeue() (T, bool) {
 	var (
 		v T

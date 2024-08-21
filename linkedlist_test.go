@@ -112,4 +112,15 @@ func TestLinkedList1(t *testing.T) {
 		t.Errorf("expected element to not be %d but got %d and %t", 22, v, b)
 	}
 
+	l.Append(42)
+	if v, b := l.Pop(); v != 42 || !b {
+		t.Errorf("expected element to be %d but got %d and %t", 42, v, b)
+	}
+	if v, _ := l.GetLast(); v == 42 {
+		t.Errorf("expected element to not be %d but got %d", 42, v)
+	}
+	if l.Contains(42) {
+		t.Errorf("expected element to be not contained after Pop()")
+	}
+
 }
