@@ -129,6 +129,20 @@ func (l *LinkedList[T]) Size() int {
 	return i
 }
 
+func (l *LinkedList[T]) IndexOf(value T) int {
+	if l.head == nil {
+		return -1
+	}
+	index, i := -1, 0
+	for current := l.head; current != nil; current = current.next {
+		if current.inner == value {
+			index = i
+		}
+		i++
+	}
+	return index
+}
+
 func (l *LinkedList[T]) GetLast() (T, bool) {
 	var (
 		v T

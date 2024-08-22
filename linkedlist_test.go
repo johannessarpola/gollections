@@ -123,4 +123,21 @@ func TestLinkedList1(t *testing.T) {
 		t.Errorf("expected element to be not contained after Pop()")
 	}
 
+	if err = l.InsertAt(1, 31); err != nil {
+		t.Error("expected no error but got ", err)
+	}
+
+	if i := l.IndexOf(31); i != 1 {
+		t.Errorf("expected index of 31 to be %d but got %d", 1, i)
+	}
+
+	l.Prepend(67)
+	if i := l.IndexOf(67); i != 0 {
+		t.Errorf("expected index of 67 to be %d but got %d", 0, i)
+	}
+
+	if i := l.IndexOf(-999); i != -1 {
+		t.Errorf("expected index of -999 to be -1 but got %d", i)
+	}
+
 }
