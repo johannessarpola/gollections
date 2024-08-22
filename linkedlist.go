@@ -134,12 +134,16 @@ func (l *LinkedList[T]) IndexOf(value T) int {
 		return -1
 	}
 	index, i := -1, 0
-	for current := l.head; current != nil; current = current.next {
-		if current.inner == value {
-			index = i
+	l.withLock(func() {
+		for current := l.head; current != nil; current = current.next {
+			if current.inner == value {
+				index = i
+				return
+			}
+			i++
 		}
-		i++
-	}
+	})
+
 	return index
 }
 
