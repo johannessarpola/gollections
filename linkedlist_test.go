@@ -1,6 +1,7 @@
 package gollections
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -139,5 +140,24 @@ func TestLinkedList1(t *testing.T) {
 	if i := l.IndexOf(-999); i != -1 {
 		t.Errorf("expected index of -999 to be -1 but got %d", i)
 	}
+
+	if ok := l.Remove(67); !ok {
+		t.Errorf("expected element to be removed but got %t", ok)
+	}
+	if contained := l.Contains(67); contained {
+		t.Errorf("expected element to be not contained but got %t", contained)
+	}
+
+	if err = l.InsertAt(2, 45); err != nil {
+		t.Error("expected no error but got ", err)
+	}
+	if ok := l.Remove(45); !ok {
+		t.Errorf("expected element to be removed but got %t", ok)
+	}
+	if contained := l.Contains(45); contained {
+		t.Errorf("expected element to be not contained but got %t", contained)
+	}
+
+	fmt.Printf("List: %s", l.String())
 
 }

@@ -2,12 +2,18 @@ package gollections
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 	"sync"
 )
 
 type Node[T comparable] struct {
 	inner T
 	next  *Node[T]
+}
+
+func (n Node[T]) String() string {
+	return fmt.Sprintf("%v", n.inner)
 }
 
 func NewNode[T comparable](value T) Node[T] {
@@ -33,6 +39,18 @@ func (r *LinkedList[T]) withLock(f func()) {
 	defer r.mu.Unlock()
 	r.mu.Lock()
 	f()
+}
+
+func (l *LinkedList[T]) String() string {
+	sb := strings.Builder{}
+	var s []string
+	sb.WriteString("[")
+	for _, v := range l.All {
+		s = append(s, fmt.Sprintf("%v", v))
+	}
+	sb.WriteString(strings.Join(s, ","))
+	sb.WriteString("]")
+	return sb.String()
 }
 
 func (l *LinkedList[T]) Contains(value T) bool {
@@ -241,6 +259,33 @@ func (l *LinkedList[T]) Dequeue() (T, bool) {
 
 	})
 	return v, b
+}
+
+func (l *LinkedList[T]) Remove(val T) bool {
+	b := false
+
+	l.withLock(func() {
+
+		if l.head != nil {
+
+			if l.head.inner == val {
+				l.head = l.head.next
+				b = true
+				return
+			}
+
+			prev := l.head
+			for current := l.head; current != nil; current = current.next {
+				if current.inner == val {
+					b = true
+					prev.next = current.next
+					return
+				}
+				prev = current
+			}
+		}
+	})
+	return b
 }
 
 func (l *LinkedList[T]) RemoveAt(idx int) (T, error) {
