@@ -321,7 +321,7 @@ func (l *LinkedList[T]) RemoveAt(idx int) (T, error) {
 	return v, err
 }
 
-func (r LinkedList[T]) Clear() {
+func (r *LinkedList[T]) Clear() {
 	r.withLock(func() {
 		// this should detach head and trigger GC at some point
 		r.head = nil

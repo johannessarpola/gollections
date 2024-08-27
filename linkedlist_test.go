@@ -160,4 +160,11 @@ func TestLinkedList1(t *testing.T) {
 
 	fmt.Printf("List: %s", l.String())
 
+	l.Clear()
+	if !l.IsEmpty() {
+		t.Errorf("expected list to be empty but got %t", l.IsEmpty())
+	}
+	if _, b := l.GetFirst(); b != false {
+		t.Errorf("expected list to be empty but got %t", b)
+	}
 }
