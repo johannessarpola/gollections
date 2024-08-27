@@ -18,7 +18,7 @@ func TestStack_PushAndPop(t *testing.T) {
 		t.Errorf("expected top of stack to be 3, got %v", v)
 	}
 
-	// Testing Dequeue
+	// Testing RemoveFirst
 	if v, ok := stack.Pop(); v != 3 || !ok {
 		t.Errorf("expected popped value to be 3, got %v", v)
 	}
@@ -53,7 +53,7 @@ func TestStack_ConcurrentPushAndPop(t *testing.T) {
 
 	ai := atomic.Int32{}
 	ai.Store(0)
-	// Testing concurrent Dequeue
+	// Testing concurrent RemoveFirst
 	for i := 0; i < 1000; i++ {
 		wg.Add(1)
 		go func() {

@@ -105,7 +105,7 @@ func TestLinkedList1(t *testing.T) {
 	}
 
 	l.Prepend(22)
-	if v, b := l.Dequeue(); v != 22 || !b {
+	if v, b := l.RemoveFirst(); v != 22 || !b {
 		t.Errorf("expected element to be %d but got %d and %t", 22, v, b)
 	}
 
@@ -114,14 +114,14 @@ func TestLinkedList1(t *testing.T) {
 	}
 
 	l.Append(42)
-	if v, b := l.Pop(); v != 42 || !b {
+	if v, b := l.RemoveLast(); v != 42 || !b {
 		t.Errorf("expected element to be %d but got %d and %t", 42, v, b)
 	}
 	if v, _ := l.GetLast(); v == 42 {
 		t.Errorf("expected element to not be %d but got %d", 42, v)
 	}
 	if l.Contains(42) {
-		t.Errorf("expected element to be not contained after Pop()")
+		t.Errorf("expected element to be not contained after RemoveLast()")
 	}
 
 	if err = l.InsertAt(1, 31); err != nil {

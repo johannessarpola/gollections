@@ -28,8 +28,8 @@ type LinkedList[T comparable] struct {
 	mu   sync.Mutex
 }
 
-func NewLinkedList[T comparable]() *LinkedList[T] {
-	return &LinkedList[T]{
+func NewLinkedList[T comparable]() LinkedList[T] {
+	return LinkedList[T]{
 		head: nil,
 		mu:   sync.Mutex{},
 	}
@@ -223,7 +223,7 @@ func (l *LinkedList[T]) GetAt(index int) (T, error) {
 	return v, err
 }
 
-func (l *LinkedList[T]) Pop() (T, bool) {
+func (l *LinkedList[T]) RemoveLast() (T, bool) {
 	var (
 		v T
 		b bool
@@ -244,7 +244,7 @@ func (l *LinkedList[T]) Pop() (T, bool) {
 	return v, b
 }
 
-func (l *LinkedList[T]) Dequeue() (T, bool) {
+func (l *LinkedList[T]) RemoveFirst() (T, bool) {
 	var (
 		v T
 		b bool
@@ -296,7 +296,7 @@ func (l *LinkedList[T]) RemoveAt(idx int) (T, error) {
 	)
 
 	if idx == 0 {
-		v, b = l.Dequeue()
+		v, b = l.RemoveFirst()
 		if !b {
 			err = errors.New("index out of bounds")
 		}
@@ -319,4 +319,11 @@ func (l *LinkedList[T]) RemoveAt(idx int) (T, error) {
 	})
 
 	return v, err
+}
+
+func (r LinkedList[T]) Clear() {
+	r.withLock(func() {
+		// this should detach head and trigger GC at some point
+		r.head = nil
+	})
 }
