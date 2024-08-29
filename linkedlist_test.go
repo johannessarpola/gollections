@@ -27,7 +27,7 @@ func TestLinkedList1(t *testing.T) {
 	}
 
 	if v, ok := l.GetFirst(); v != 99 || !ok {
-		t.Errorf("expected first to be %d and %t but got %d and %t", 1, true, v, ok)
+		t.Errorf("expected head to be %d and %t but got %d and %t", 1, true, v, ok)
 	}
 
 	if l.Size() != 4 {
@@ -78,7 +78,7 @@ func TestLinkedList1(t *testing.T) {
 	}
 
 	if v, ok := l.GetFirst(); v != -66 || !ok {
-		t.Errorf("expected first element to be %d and %t but got %d and %t", -66, true, v, ok)
+		t.Errorf("expected head element to be %d and %t but got %d and %t", -66, true, v, ok)
 	}
 
 	c3 := l.Contains(-66)
@@ -87,7 +87,7 @@ func TestLinkedList1(t *testing.T) {
 	}
 
 	if v, ok := l.GetFirst(); v != -66 || !ok {
-		t.Errorf("expected first to be %d but got %d and %t", -66, v, ok)
+		t.Errorf("expected head to be %d but got %d and %t", -66, v, ok)
 	}
 
 	err = l.InsertAt(3, 55)
