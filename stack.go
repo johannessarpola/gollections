@@ -4,13 +4,13 @@ import (
 	"sync"
 )
 
-type Stack[T any] struct {
-	inner []T
-	mu    sync.Mutex
+type Stack[T comparable] struct {
+	head *Node[T]
+	mu   sync.Mutex
 }
 
-func NewStack[T any]() *Stack[T] {
-	return &Stack[T]{inner: make([]T, 0)}
+func NewStack[T comparable]() Stack[T] {
+	return Stack[T]{}
 }
 
 func (r *Stack[T]) withLock(f func()) {
@@ -21,41 +21,46 @@ func (r *Stack[T]) withLock(f func()) {
 
 func (r *Stack[T]) Peek() (T, bool) {
 	var (
-		rs T
-		b  bool
+		v T
+		b bool
 	)
-	b = true
-	if r.inner == nil || len(r.inner) == 0 {
-		b = false
-		return rs, b
-	}
-	rs = r.inner[len(r.inner)-1]
-	return rs, b
+	r.withLock(func() {
+		if r.head != nil {
+			v, b = r.head.Get()
+		}
+	})
+
+	return v, b
 }
 
-func (r *Stack[T]) Push(e T) bool {
-	b := true
+func (r *Stack[T]) Push(e T) {
 	r.withLock(func() {
-		r.inner = append(r.inner, e)
+		n := NewNode(e)
+		n.next = r.head
+		r.head = &n
 	})
-	return b
 }
 
 func (r *Stack[T]) Pop() (T, bool) {
 	var (
-		rs T
-		b  bool
+		v T
+		b bool
 	)
-	b = true
 	r.withLock(func() {
-		if r.inner == nil || len(r.inner) == 0 {
-			b = false
-			return
+		if r.head != nil {
+			h := r.head
+			r.head = h.next
+			v, _ = h.Get()
+			b = true
 		}
-		l := len(r.inner)
-		last, rest := r.inner[l-1], r.inner[:l-1]
-		r.inner = rest
-		rs = last
 	})
-	return rs, b
+	return v, b
+}
+
+func (q *Stack[T]) IsEmpty() bool {
+	b := false
+	q.withLock(func() {
+		b = q.head == nil
+	})
+	return b
 }

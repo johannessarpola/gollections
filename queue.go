@@ -41,16 +41,14 @@ func (q *Queue[T]) Dequeue() (T, bool) {
 
 	q.withLock(func() {
 		if q.head != nil {
-			val, ok = q.head.Get()
+			val, _ = q.head.Get()
+			ok = true
 			q.head = q.head.next
 
 			if q.head == nil {
 				q.last = nil
 			}
 		}
-
-		return
-
 	})
 
 	return val, ok
@@ -58,16 +56,16 @@ func (q *Queue[T]) Dequeue() (T, bool) {
 
 func (q *Queue[T]) Peek() (T, bool) {
 	var (
-		val T
-		ok  bool
+		val     T
+		nonZero bool
 	)
 
 	q.withLock(func() {
 		if q.head != nil {
-			val, ok = q.head.Get()
+			val, nonZero = q.head.Get()
 		}
 	})
-	return val, ok
+	return val, nonZero
 }
 
 func (q *Queue[T]) Size() int {
@@ -89,7 +87,6 @@ func (q *Queue[T]) IsEmpty() bool {
 	b := false
 	q.withLock(func() {
 		b = q.head == nil
-		return
 	})
 	return b
 }
