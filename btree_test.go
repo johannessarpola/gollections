@@ -1,33 +1,31 @@
 package gollections
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
-	"encoding/json"
-	"fmt"
 	"testing"
 )
 
-func TestName(t *testing.T) {
-	type abc struct {
-		a string
-		b string
-		c string
+func TestBasic(t *testing.T) {
+	bt := NewBinaryTree[int]()
+
+	bt.Insert(99)
+
+	if v, b := bt.head.Get(); v != 99 || !b {
+		t.Errorf("head should be %v, want %v", 99, v)
 	}
 
-	m, err := json.Marshal(abc{
-		a: "aa",
-		b: "bb",
-		c: "cc",
-	})
-	if err != nil {
-		t.Fatal(err)
+	bt.Insert(77)
+	if v, b := bt.head.prev.Get(); v != 77 || !b {
+		t.Errorf("head left should be %d got %v", 77, v)
 	}
-	hash := sha256.New()
-	_, err = hash.Write(m)
-	if err != nil {
-		t.Fatal(err)
+
+	bt.Insert(101)
+	if v, b := bt.head.next.Get(); v != 101 || !b {
+		t.Errorf("head right should be %d got %v", 101, v)
 	}
-	hsum := hex.EncodeToString(hash.Sum(nil))
-	fmt.Println(hsum)
+
+	bt.Insert(1)
+	if v, b := bt.head.prev.prev.Get(); v != 1 || !b {
+		t.Errorf("head left.left should be %d got %v", 1, v)
+	}
+
 }
