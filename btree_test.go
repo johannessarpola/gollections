@@ -32,15 +32,16 @@ func TestBasic(t *testing.T) {
 
 }
 
-func Test(t *testing.T) {
+func TestPreorder(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    []int
 		expected []int
 	}{
-		{name: "first", input: []int{99, 77, 33, 101, 90}, expected: []int{99, 77, 33, 90, 101}},
-		{name: "second", input: []int{1, 2, 3}, expected: []int{1, 2, 3}},
-		{name: "third", input: []int{1, 99, 101, 1}, expected: []int{1, 99, 1, 101}},
+		{name: "preorder-1", input: []int{99, 77, 33, 101, 90}, expected: []int{99, 77, 33, 90, 101}},
+		{name: "preorder-2", input: []int{1, 2, 3, 4, 5}, expected: []int{1, 2, 3, 4, 5}},
+		{name: "preorder-3", input: []int{1, 99, 101, 1}, expected: []int{1, 99, 1, 101}},
+		{name: "preorder-4", input: []int{5, 3, 7, 2, 4, 6, 8}, expected: []int{5, 3, 2, 4, 7, 6, 8}},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
