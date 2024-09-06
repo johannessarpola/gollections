@@ -13,8 +13,8 @@ type BinaryTree[T cmp.Ordered] struct {
 	mu   sync.Mutex
 }
 
-func NewBinaryTree[T cmp.Ordered]() *BinaryTree[T] {
-	return &BinaryTree[T]{}
+func NewBinaryTree[T cmp.Ordered]() BinaryTree[T] {
+	return BinaryTree[T]{}
 }
 
 func (r *BinaryTree[T]) withLock(f func()) {
@@ -65,6 +65,31 @@ func preorder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) 
 
 }
 
+func inorder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) bool) {
+	if root == nil {
+		return
+	}
+
+	inorder(root.prev, i, yield)
+
+	// Yield the current node
+	index := int(i.Add(1) - 1)
+	if !yield(index, root.inner) {
+		return
+	}
+
+	inorder(root.next, i, yield)
+}
+
+// Inorder left-root-right
+func (l *BinaryTree[T]) Inorder(yield func(int, T) bool) {
+	l.withLock(func() {
+		i := atomic.Int32{}
+		inorder(l.head, &i, yield)
+	})
+}
+
+// Preorder root-left-right
 func (l *BinaryTree[T]) Preorder(yield func(int, T) bool) {
 	l.withLock(func() {
 		i := atomic.Int32{}

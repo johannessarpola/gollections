@@ -1,6 +1,7 @@
 package gollections
 
 import (
+	"cmp"
 	"fmt"
 	"reflect"
 	"testing"
@@ -32,6 +33,16 @@ func TestBasic(t *testing.T) {
 
 }
 
+func treeWithInput[T cmp.Ordered](input []T) *BinaryTree[T] {
+	bt := NewBinaryTree[T]()
+
+	for _, v := range input {
+		bt.Insert(v)
+	}
+
+	return &bt
+}
+
 func TestPreorder(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -45,16 +56,45 @@ func TestPreorder(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			bt := NewBinaryTree[int]()
-			for _, v := range test.input {
-				bt.Insert(v)
-			}
-
+			bt := treeWithInput(test.input)
 			fmt.Println("tree representation: ")
 			fmt.Print(bt.String())
 
 			var rs []int
 			for _, v := range bt.Preorder {
+				rs = append(rs, v)
+			}
+
+			fmt.Printf("travelsal order was:\n%v\n", rs)
+
+			if !reflect.DeepEqual(rs, test.expected) {
+				t.Errorf("got %v, want %v", rs, test.expected)
+			}
+
+		})
+	}
+}
+
+func TestInorder(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []int
+		expected []int
+	}{
+		{name: "inorder-1", input: []int{99, 77, 33, 101, 90}, expected: []int{33, 77, 90, 99, 101}},
+		{name: "inorder-2", input: []int{1, 2, 3, 4, 5}, expected: []int{1, 2, 3, 4, 5}},
+		{name: "inorder-3", input: []int{1, 99, 101, 1}, expected: []int{1, 1, 99, 101}},
+		{name: "inorder-4", input: []int{5, 3, 7, 2, 4, 6, 8}, expected: []int{2, 3, 4, 5, 6, 7, 8}},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			bt := treeWithInput(test.input)
+
+			fmt.Println("tree representation: ")
+			fmt.Print(bt.String())
+
+			var rs []int
+			for _, v := range bt.Inorder {
 				rs = append(rs, v)
 			}
 
