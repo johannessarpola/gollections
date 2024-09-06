@@ -32,12 +32,12 @@ func TestBasic(t *testing.T) {
 
 }
 
-type TravelsalOrder = int
+type TravelsalOrder = string
 
 const (
-	Inorder TravelsalOrder = iota
-	Preorder
-	Postorder
+	Inorder   TravelsalOrder = "inorder"
+	Preorder                 = "preorder"
+	Postorder                = "postorder"
 )
 
 func (bt *BinaryTree[T]) resolveTravelsalFunc(travelsalOrder TravelsalOrder) func(yield func(int, T) bool) {
@@ -104,7 +104,7 @@ func TestInorder(t *testing.T) {
 				rs = append(rs, v)
 			}
 
-			fmt.Printf("resolveTravelsalFunc order was:\n%v\n", rs)
+			fmt.Printf("%s travelsal was:\n%v\n", test.to, rs)
 
 			if !reflect.DeepEqual(rs, test.expected) {
 				t.Errorf("got %v, want %v", rs, test.expected)
