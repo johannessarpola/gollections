@@ -81,19 +81,40 @@ func inorder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) b
 	inorder(root.next, i, yield)
 }
 
+func postorder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) bool) {
+	if root == nil {
+		return
+	}
+
+	postorder(root.prev, i, yield)
+
+	postorder(root.next, i, yield)
+	// Yield the current node
+	index := int(i.Add(1) - 1)
+	if !yield(index, root.inner) {
+		return
+	}
+
+}
+
+// Postorder left-root-right
+func (l *BinaryTree[T]) Postorder(yield func(int, T) bool) {
+	l.withLock(func() {
+		postorder(l.head, &atomic.Int32{}, yield)
+	})
+}
+
 // Inorder left-root-right
 func (l *BinaryTree[T]) Inorder(yield func(int, T) bool) {
 	l.withLock(func() {
-		i := atomic.Int32{}
-		inorder(l.head, &i, yield)
+		inorder(l.head, &atomic.Int32{}, yield)
 	})
 }
 
 // Preorder root-left-right
 func (l *BinaryTree[T]) Preorder(yield func(int, T) bool) {
 	l.withLock(func() {
-		i := atomic.Int32{}
-		preorder(l.head, &i, yield)
+		preorder(l.head, &atomic.Int32{}, yield)
 	})
 }
 
