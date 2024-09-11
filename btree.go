@@ -17,9 +17,9 @@ func NewBinaryTree[T cmp.Ordered]() BinaryTree[T] {
 	return BinaryTree[T]{}
 }
 
-func (r *BinaryTree[T]) withLock(f func()) {
-	defer r.mu.Unlock()
-	r.mu.Lock()
+func (bt *BinaryTree[T]) withLock(f func()) {
+	defer bt.mu.Unlock()
+	bt.mu.Lock()
 	f()
 }
 
@@ -38,15 +38,15 @@ func insert[T cmp.Ordered](root *Node[T], value T) *Node[T] {
 	return root
 }
 
-func (b *BinaryTree[T]) Insert(values ...T) {
-	b.withLock(func() {
+func (bt *BinaryTree[T]) Insert(values ...T) {
+	bt.withLock(func() {
 		for _, v := range values {
-			b.head = insert(b.head, v)
+			bt.head = insert(bt.head, v)
 		}
 	})
 }
 
-func preorder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) bool) {
+func preOrder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) bool) {
 	if root == nil {
 		return
 	}
@@ -58,19 +58,19 @@ func preorder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) 
 	}
 
 	// Traverse the left subtree
-	preorder(root.prev, i, yield)
+	preOrder(root.prev, i, yield)
 
 	// Traverse the right subtree
-	preorder(root.next, i, yield)
+	preOrder(root.next, i, yield)
 
 }
 
-func inorder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) bool) {
+func inOrder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) bool) {
 	if root == nil {
 		return
 	}
 
-	inorder(root.prev, i, yield)
+	inOrder(root.prev, i, yield)
 
 	// Yield the current node
 	index := int(i.Add(1) - 1)
@@ -78,44 +78,83 @@ func inorder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) b
 		return
 	}
 
-	inorder(root.next, i, yield)
+	inOrder(root.next, i, yield)
 }
 
-func postorder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) bool) {
+func postOrder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) bool) {
 	if root == nil {
 		return
 	}
 
-	postorder(root.prev, i, yield)
+	postOrder(root.prev, i, yield)
 
-	postorder(root.next, i, yield)
+	postOrder(root.next, i, yield)
 	// Yield the current node
 	index := int(i.Add(1) - 1)
 	if !yield(index, root.inner) {
 		return
 	}
 
+}
+
+func levelOrder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) bool) {
+	if root == nil {
+		return
+	}
+
+	// Yield the current node
+	index := int(i.Add(1) - 1)
+	if !yield(index, root.inner) {
+		return
+	}
+
+}
+
+// treeHeight computes the height of the binary tree.
+func treeHeight[T comparable](root *Node[T]) int {
+	if root == nil {
+		return 0
+	}
+	leftHeight := treeHeight(root.prev)
+	rightHeight := treeHeight(root.next)
+
+	// The height of the tree is the maximum of the two subtrees + 1 (for the current root).
+	if leftHeight > rightHeight {
+		return leftHeight + 1
+	}
+	return rightHeight + 1
 }
 
 // Postorder left-root-right
-func (l *BinaryTree[T]) Postorder(yield func(int, T) bool) {
-	l.withLock(func() {
-		postorder(l.head, &atomic.Int32{}, yield)
+func (bt *BinaryTree[T]) Postorder(yield func(int, T) bool) {
+	bt.withLock(func() {
+		postOrder(bt.head, &atomic.Int32{}, yield)
 	})
 }
 
-// Inorder left-root-right
-func (l *BinaryTree[T]) Inorder(yield func(int, T) bool) {
-	l.withLock(func() {
-		inorder(l.head, &atomic.Int32{}, yield)
+// InOrder left-root-right
+func (bt *BinaryTree[T]) InOrder(yield func(int, T) bool) {
+	bt.withLock(func() {
+		inOrder(bt.head, &atomic.Int32{}, yield)
 	})
 }
 
-// Preorder root-left-right
-func (l *BinaryTree[T]) Preorder(yield func(int, T) bool) {
-	l.withLock(func() {
-		preorder(l.head, &atomic.Int32{}, yield)
+// PreOrder root-left-right
+func (bt *BinaryTree[T]) PreOrder(yield func(int, T) bool) {
+	bt.withLock(func() {
+		preOrder(bt.head, &atomic.Int32{}, yield)
 	})
+}
+
+// LeverOrder breadth first
+func (bt *BinaryTree[T]) LeverOrder(yield func(int, T) bool) {
+	bt.withLock(func() {
+		levelOrder(bt.head, &atomic.Int32{}, yield)
+	})
+}
+
+func (bt *BinaryTree[T]) Size() int {
+	return treeHeight(bt.head)
 }
 
 // String returns a string visualization of the binary tree.
