@@ -64,8 +64,8 @@ func TestSize(t *testing.T) {
 	}{
 		{name: "size-1", input: []int{1, 2, 3, 4, 5}, expected: 5},
 		{name: "size-2", input: []int{1}, expected: 1},
-		{name: "size-3", input: []int{1, 2, 3}, expected: 3},
-		{name: "size-4", input: []int{}, expected: 0},
+		{name: "size-3", input: []int{}, expected: 0},
+		{name: "size-4", input: []int{5, 3, 7, 2, 4, 6, 8}, expected: 3},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -75,8 +75,8 @@ func TestSize(t *testing.T) {
 				bt.Insert(v)
 			}
 
-			if bt.Size() != test.expected {
-				t.Errorf("got %v, want %v", bt.Size(), test.expected)
+			if bt.Height() != test.expected {
+				t.Errorf("got %v, want %v", bt.Height(), test.expected)
 			}
 
 		})

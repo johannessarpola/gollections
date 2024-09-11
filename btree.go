@@ -97,11 +97,12 @@ func postOrder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T)
 
 }
 
-func levelOrder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) bool) {
+func levelOrder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) bool, previous ...T) {
 	if root == nil {
 		return
 	}
 
+	previous = append(previous, root.inner)
 	// Yield the current node
 	index := int(i.Add(1) - 1)
 	if !yield(index, root.inner) {
@@ -153,7 +154,7 @@ func (bt *BinaryTree[T]) LeverOrder(yield func(int, T) bool) {
 	})
 }
 
-func (bt *BinaryTree[T]) Size() int {
+func (bt *BinaryTree[T]) Height() int {
 	return treeHeight(bt.head)
 }
 
