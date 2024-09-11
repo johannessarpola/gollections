@@ -97,18 +97,37 @@ func postOrder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T)
 
 }
 
-func levelOrder[T cmp.Ordered](root *Node[T], i *atomic.Int32, yield func(int, T) bool, previous ...T) {
+func levelOrder[T cmp.Ordered](root *Node[T], yield func(int, T) bool) {
 	if root == nil {
 		return
 	}
 
-	previous = append(previous, root.inner)
-	// Yield the current node
-	index := int(i.Add(1) - 1)
-	if !yield(index, root.inner) {
-		return
-	}
+	queue := make([]*Node[T], 0)
+	queue = append(queue, root)
 
+	i := 0
+
+	for len(queue) > 0 {
+		// dequeue the first currentNode
+		currentNode := queue[0] // deque element
+		queue = queue[1:]       // remove first element
+
+		// yield the currentNode value
+		if !yield(i, currentNode.inner) {
+			return
+		}
+		i++
+
+		// add left child to the queue
+		if currentNode.prev != nil {
+			queue = append(queue, currentNode.prev)
+		}
+
+		// add right child to the queue
+		if currentNode.next != nil {
+			queue = append(queue, currentNode.next)
+		}
+	}
 }
 
 // treeHeight computes the height of the binary tree.
@@ -150,7 +169,7 @@ func (bt *BinaryTree[T]) PreOrder(yield func(int, T) bool) {
 // LeverOrder breadth first
 func (bt *BinaryTree[T]) LeverOrder(yield func(int, T) bool) {
 	bt.withLock(func() {
-		levelOrder(bt.head, &atomic.Int32{}, yield)
+		levelOrder(bt.head, yield)
 	})
 }
 

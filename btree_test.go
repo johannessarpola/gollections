@@ -117,14 +117,14 @@ func TestInorder(t *testing.T) {
 		{name: "postOrder-7", input: []int{10, 5, 1, 7, 40, 50, 30}, expected: []int{1, 7, 5, 30, 50, 40, 10}, to: PostOrder},
 		{name: "postOrder-8", input: []int{12, 8, 15, 5, 10, 13, 18}, expected: []int{5, 10, 8, 13, 18, 15, 12}, to: PostOrder},
 
-		{name: "levelorder-1", input: []int{99, 77, 33, 101, 90}, expected: []int{99, 77, 101, 33, 90}, to: LevelOrder},
-		{name: "levelorder-2", input: []int{1, 2, 3, 4, 5}, expected: []int{1, 2, 3, 4, 5}, to: LevelOrder},
-		{name: "levelorder-3", input: []int{1, 99, 101, 1}, expected: []int{1, 99, 1, 101}, to: LevelOrder},
-		{name: "levelorder-4", input: []int{5, 3, 7, 2, 4, 6, 8}, expected: []int{5, 3, 7, 2, 4, 6, 8}, to: LevelOrder},
-		{name: "levelorder-5", input: []int{50, 30, 20, 40, 70, 60, 80}, expected: []int{50, 30, 70, 20, 40, 60, 80}, to: LevelOrder},
-		{name: "levelorder-6", input: []int{15, 10, 20, 8, 12, 17, 25}, expected: []int{15, 10, 20, 8, 12, 17, 25}, to: LevelOrder},
-		{name: "levelorder-7", input: []int{10, 5, 1, 7, 40, 50, 30}, expected: []int{10, 5, 40, 1, 7, 30, 50}, to: LevelOrder},
-		{name: "levelorder-8", input: []int{12, 8, 15, 5, 10, 13, 18}, expected: []int{12, 8, 15, 5, 10, 13, 18}, to: LevelOrder},
+		{name: "levelOrder-1", input: []int{99, 77, 33, 101, 90}, expected: []int{99, 77, 101, 33, 90}, to: LevelOrder},
+		{name: "levelOrder-2", input: []int{1, 2, 3, 4, 5}, expected: []int{1, 2, 3, 4, 5}, to: LevelOrder},
+		{name: "levelOrder-3", input: []int{1, 99, 101, 1}, expected: []int{1, 99, 1, 101}, to: LevelOrder},
+		{name: "levelOrder-4", input: []int{5, 3, 7, 2, 4, 6, 8}, expected: []int{5, 3, 7, 2, 4, 6, 8}, to: LevelOrder},
+		{name: "levelOrder-5", input: []int{50, 30, 20, 40, 70, 60, 80}, expected: []int{50, 30, 70, 20, 40, 60, 80}, to: LevelOrder},
+		{name: "levelOrder-6", input: []int{15, 10, 20, 8, 12, 17, 25}, expected: []int{15, 10, 20, 8, 12, 17, 25}, to: LevelOrder},
+		{name: "levelOrder-7", input: []int{10, 5, 1, 7, 40, 50, 30}, expected: []int{10, 5, 40, 1, 7, 30, 50}, to: LevelOrder},
+		{name: "levelOrder-8", input: []int{12, 8, 15, 5, 10, 13, 18}, expected: []int{12, 8, 15, 5, 10, 13, 18}, to: LevelOrder},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
