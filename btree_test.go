@@ -246,9 +246,9 @@ func TestBinaryTree_FindMin(t *testing.T) {
 		input    []int
 		expected int
 	}{
-		{name: "findMax-1", input: []int{99, 77, 33, 101, 90}, expected: 33},
-		{name: "findMax-2", input: []int{1, 2, 3, 4, 5}, expected: 1},
-		{name: "findMax-3", input: []int{5, 3, 7, 2, 4, 6, 8}, expected: 2},
+		{name: "findMin-1", input: []int{99, 77, 33, 101, 90}, expected: 33},
+		{name: "findMin-2", input: []int{1, 2, 3, 4, 5}, expected: 1},
+		{name: "findMin-3", input: []int{5, 3, 7, 2, 4, 6, 8}, expected: 2},
 	}
 
 	for _, test := range tests {
