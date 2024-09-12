@@ -152,3 +152,116 @@ func TestInorder(t *testing.T) {
 		})
 	}
 }
+
+func max(i int, i2 int) bool {
+	return i > i2
+}
+func min(i int, i2 int) bool {
+	return i < i2
+}
+
+func TestFind(t *testing.T) {
+	type comparison struct {
+		predicate func(int, int) bool
+		expected  int
+	}
+	tests := []struct {
+		name  string
+		input []int
+		comp  []comparison
+	}{
+		{name: "find-1", input: []int{99, 77, 33, 101, 90}, comp: []comparison{
+			{predicate: max, expected: 101},
+			{predicate: min, expected: 33},
+		}},
+		{name: "find-2", input: []int{1, 2, 3, 4, 5}, comp: []comparison{
+			{predicate: max, expected: 5},
+			{predicate: min, expected: 1},
+		}},
+		{name: "find-3", input: []int{5, 3, 7, 2, 4, 6, 8}, comp: []comparison{
+			{predicate: max, expected: 8},
+			{predicate: min, expected: 2},
+		}},
+		{name: "find-4", input: []int{12, 8, 15, 5, 10, 13, 18}, comp: []comparison{
+			{predicate: max, expected: 18},
+			{predicate: min, expected: 5},
+		}},
+		{name: "find-5", input: []int{}, comp: []comparison{
+			{predicate: max, expected: 0},
+			{predicate: min, expected: 0},
+		}},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			bt := NewBinaryTree[int]()
+
+			for _, v := range test.input {
+				bt.Insert(v)
+			}
+
+			for _, comp := range test.comp {
+				rs, b := bt.Find(comp.predicate)
+				if rs != comp.expected {
+					t.Errorf("got %v, want %v", rs, comp.expected)
+				}
+
+				if rs == 0 && b {
+					t.Errorf("bool should be false when not found")
+				}
+			}
+
+		})
+	}
+}
+
+func TestBinaryTree_FindMax(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []int
+		expected int
+	}{
+		{name: "findMax-1", input: []int{99, 77, 33, 101, 90}, expected: 101},
+		{name: "findMax-2", input: []int{1, 2, 3, 4, 5}, expected: 5},
+		{name: "findMax-3", input: []int{5, 3, 7, 2, 4, 6, 8}, expected: 8},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			bt := NewBinaryTree[int]()
+
+			for _, v := range test.input {
+				bt.Insert(v)
+			}
+			rs, b := bt.FindMax()
+			if rs != test.expected || !b {
+				t.Errorf("got %v, want %v", rs, test.expected)
+			}
+		})
+	}
+}
+
+func TestBinaryTree_FindMin(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []int
+		expected int
+	}{
+		{name: "findMax-1", input: []int{99, 77, 33, 101, 90}, expected: 33},
+		{name: "findMax-2", input: []int{1, 2, 3, 4, 5}, expected: 1},
+		{name: "findMax-3", input: []int{5, 3, 7, 2, 4, 6, 8}, expected: 2},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			bt := NewBinaryTree[int]()
+
+			for _, v := range test.input {
+				bt.Insert(v)
+			}
+			rs, b := bt.FindMin()
+			if rs != test.expected || !b {
+				t.Errorf("got %v, want %v", rs, test.expected)
+			}
+		})
+	}
+}

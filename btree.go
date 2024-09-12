@@ -192,6 +192,63 @@ func (bt *BinaryTree[T]) String() string {
 	return sb.String()
 }
 
+func find[T comparable](root *Node[T], predicate func(T, T) bool) (T, bool) {
+	var zv T
+	if root == nil {
+		return zv, false
+	}
+
+	best := root.inner
+	lv, lf := find(root.prev, predicate)
+
+	if predicate(lv, best) && lf {
+		best = lv
+	}
+
+	rv, rf := find(root.next, predicate)
+	if predicate(rv, best) && rf {
+		best = rv
+	}
+	return best, true
+}
+
+func (bt *BinaryTree[T]) FindMax() (T, bool) {
+	var (
+		rs T
+		b  bool
+	)
+	bt.withLock(func() {
+		rs, b = find(bt.head, func(nv T, ov T) bool {
+			return nv > ov
+		})
+	})
+	return rs, b
+}
+
+func (bt *BinaryTree[T]) FindMin() (T, bool) {
+	var (
+		rs T
+		b  bool
+	)
+	bt.withLock(func() {
+		rs, b = find(bt.head, func(nv T, ov T) bool {
+			return nv < ov
+		})
+	})
+	return rs, b
+}
+
+func (bt *BinaryTree[T]) Find(predicate func(T, T) bool) (T, bool) {
+	var (
+		rs T
+		b  bool
+	)
+	bt.withLock(func() {
+		rs, b = find(bt.head, predicate)
+	})
+	return rs, b
+}
+
 // visualizeNode helps in the recursive visualization of the binary tree.
 func (bt *BinaryTree[T]) visualizeNode(node *Node[T], prefix string, isTail bool, sb *strings.Builder) {
 	if node == nil {
