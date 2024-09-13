@@ -265,3 +265,42 @@ func TestBinaryTree_FindMin(t *testing.T) {
 		})
 	}
 }
+
+func TestBinaryTree_Balance(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []int
+		expected []int
+	}{
+		{name: "balance-1", input: []int{10, 5, 20, 15, 30}, expected: []int{15, 5, 20, 10, 30}},
+		{name: "balance-2", input: []int{1, 2, 3, 4, 5}, expected: []int{3, 1, 4, 2, 5}},                           // perfectly balanced
+		{name: "balance-3", input: []int{7, 6, 5, 4, 3, 2, 1}, expected: []int{4, 2, 6, 1, 3, 5, 7}},               // balanced after skewed input
+		{name: "balance-4", input: []int{30, 20, 40, 10, 25, 35, 50}, expected: []int{30, 20, 40, 10, 25, 35, 50}}, // already balanced
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			bt := NewBinaryTree[int]()
+
+			for _, v := range test.input {
+				bt.Insert(v)
+			}
+
+			fmt.Println("tree representation before balancing: ")
+			fmt.Print(bt.String())
+
+			bt.Balance()
+			fmt.Println("tree representation after balancing: ")
+			fmt.Print(bt.String())
+
+			var rs []int
+			for _, v := range bt.LeverOrder {
+				rs = append(rs, v)
+			}
+
+			if !reflect.DeepEqual(rs, test.expected) {
+				t.Errorf("got %v, want %v", rs, test.expected)
+			}
+
+		})
+	}
+}
