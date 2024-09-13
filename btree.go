@@ -3,6 +3,7 @@ package gollections
 import (
 	"cmp"
 	"fmt"
+	"slices"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -175,6 +176,38 @@ func (bt *BinaryTree[T]) LeverOrder(yield func(int, T) bool) {
 
 func (bt *BinaryTree[T]) Height() int {
 	return treeHeight(bt.head)
+}
+
+// balanceTree builds a balanced binary tree from the sorted slice
+func balanceTree[T comparable](values []T, start, end int) *Node[T] {
+	if start > end {
+		return nil
+	}
+
+	// middle element as the root
+	mid := (start + end) / 2
+	node := &Node[T]{
+		inner: values[mid],
+	}
+
+	// recursively build the left and right subtrees
+	node.prev = balanceTree[T](values, start, mid-1)
+	node.next = balanceTree[T](values, mid+1, end)
+
+	return node
+}
+
+func (bt *BinaryTree[T]) Balance() {
+	var slice []T
+	for _, v := range bt.InOrder {
+		slice = append(slice, v)
+	}
+	slices.Sort(slice)
+
+	bt.withLock(func() {
+		bt.head = balanceTree(slice, 0, len(slice)-1)
+	})
+
 }
 
 // String returns a string visualization of the binary tree.
