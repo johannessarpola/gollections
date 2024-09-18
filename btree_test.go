@@ -266,6 +266,37 @@ func TestBinaryTree_FindMin(t *testing.T) {
 	}
 }
 
+func TestBinaryTree_Search(t *testing.T) {
+	tests := []struct {
+		name         string
+		input        []int
+		searchFor    int
+		expectedVal  int
+		expectedBool bool
+	}{
+		{name: "search-1", input: []int{99, 77, 33, 101, 90}, searchFor: 33, expectedVal: 33, expectedBool: true},
+		{name: "Search-2", input: []int{1, 2, 3, 4, 5}, searchFor: 5, expectedVal: 5, expectedBool: true},
+		{name: "search-3", input: []int{5, 3, 7, 2, 4, 6, 8}, searchFor: 8, expectedVal: 8, expectedBool: true},
+		{name: "search-4", input: []int{5, 3, 7, 2, 4, 6, 8}, searchFor: 99, expectedVal: 0, expectedBool: false},
+		{name: "search-5", input: []int{}, searchFor: 99, expectedVal: 0, expectedBool: false},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			bt := NewBinaryTree[int]()
+
+			for _, v := range test.input {
+				bt.Insert(v)
+			}
+			rs, b := bt.Search(test.searchFor)
+
+			if rs != test.expectedVal || b != test.expectedBool {
+				t.Errorf("searched for %v, got %v (%v), want %v (%v)", test.searchFor, rs, b, test.expectedVal, test.expectedBool)
+			}
+		})
+	}
+}
+
 func TestBinaryTree_Balance(t *testing.T) {
 	tests := []struct {
 		name     string

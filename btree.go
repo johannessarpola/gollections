@@ -282,6 +282,48 @@ func (bt *BinaryTree[T]) Find(predicate func(T, T) bool) (T, bool) {
 	return rs, b
 }
 
+func search[T cmp.Ordered](root *Node[T], target T) (T, bool) {
+	var (
+		zv T
+	)
+
+	if root == nil {
+		return zv, false
+	}
+
+	if root.inner == target {
+		return root.inner, true
+	}
+
+	if target < root.inner {
+		lrs, lb := search(root.prev, target)
+		if lb {
+			return lrs, true
+		}
+	}
+
+	if target > root.inner {
+		rrs, rb := search(root.next, target)
+		if rb {
+			return rrs, true
+		}
+	}
+
+	return zv, false
+}
+
+func (bt *BinaryTree[T]) Search(element T) (T, bool) {
+	var (
+		rs T
+		b  bool
+	)
+	bt.withLock(func() {
+		rs, b = search(bt.head, element)
+	})
+
+	return rs, b
+}
+
 // visualizeNode helps in the recursive visualization of the binary tree.
 func (bt *BinaryTree[T]) visualizeNode(node *Node[T], prefix string, isTail bool, sb *strings.Builder) {
 	if node == nil {
