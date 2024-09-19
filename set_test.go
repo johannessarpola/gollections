@@ -2,6 +2,7 @@ package gollections
 
 import (
 	"encoding/json"
+	"reflect"
 	"testing"
 )
 
@@ -50,9 +51,15 @@ func TestSet(t *testing.T) {
 		t.Errorf("expected %s to be not contained", "non")
 	}
 
-	s.AddAll("kk", "k", "äää")
-	if !(s.Contains("kk") && s.Contains("k") && s.Contains("äää")) {
+	s2 := NewSet[string]()
+	s2.AddAll("kk", "k", "äää")
+	if !(s2.Contains("kk") && s2.Contains("k") && s2.Contains("äää")) {
 		t.Errorf("expected %s,%s,%s to be contained after addAll", "kk", "k", "äää")
+	}
+
+	want := []string{"kk", "k", "äää"}
+	if !reflect.DeepEqual(s2.Items(), want) {
+		t.Errorf("expected %v to be contained after addAll", want)
 	}
 
 	var jsonStr = `
@@ -62,30 +69,30 @@ func TestSet(t *testing.T) {
 		"bca"
 	]`
 
-	s2 := NewSet[string]()
-	err := json.Unmarshal([]byte(jsonStr), &s2)
+	s3 := NewSet[string]()
+	err := json.Unmarshal([]byte(jsonStr), &s3)
 
 	if err != nil {
 		t.Errorf("expected %s to unmarshal json", jsonStr)
 	}
 
-	if !(s2.Contains("abc") && s.Contains("cba") && s.Contains("bca")) {
+	if !(s3.Contains("abc") && s3.Contains("cba") && s3.Contains("bca")) {
 		t.Errorf("expected strings to be contained")
 	}
 
-	if s2.Contains("") {
+	if s3.Contains("") {
 		t.Errorf("contained string that should not be there")
 	}
 
 	type contained struct {
 		Field string      `json:"Field"`
-		Ids   Set[string] `json:"Ids"`
+		Set   Set[string] `json:"Set"`
 	}
 
 	var jsonStr2 = `
 {
 	"Field" : "value",
-	"Ids" : [
+	"Set" : [
 		"abc", 
 		"cba", 
 		"bca"
@@ -100,11 +107,11 @@ func TestSet(t *testing.T) {
 	if c.Field != "value" {
 		t.Errorf("expected Field to be %s but got %s", c.Field, "value")
 	}
-	if c.Ids.Size() != 3 {
+	if c.Set.Size() != 3 {
 		t.Errorf("expected size to be %d ", 3)
 	}
 
-	if !(c.Ids.Contains("abc") && s.Contains("cba") && s.Contains("bca")) {
+	if !(c.Set.Contains("abc") && s.Contains("cba") && s.Contains("bca")) {
 		t.Errorf("expected strings to be contained")
 	}
 }

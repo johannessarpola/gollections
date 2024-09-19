@@ -73,6 +73,14 @@ func (s *Set[T]) Clear() {
 	s.internal = make(map[T]struct{})
 }
 
+func (s *Set[T]) Items() []T {
+	keys := make([]T, 0, len(s.internal))
+	for k := range s.internal {
+		keys = append(keys, k)
+	}
+	return keys
+}
+
 func (c *Set[T]) UnmarshalJSON(data []byte) error {
 
 	if c.internal == nil {
