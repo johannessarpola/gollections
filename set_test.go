@@ -84,6 +84,16 @@ func TestSet(t *testing.T) {
 		t.Errorf("contained string that should not be there")
 	}
 
+	var ns3 Set[string]
+	jb, err := json.Marshal(s3)
+	if err != nil || len(jb) == 0 {
+		t.Errorf("expected %s to marshal json", jsonStr)
+	}
+
+	if json.Unmarshal(jb, &ns3) != nil || !reflect.DeepEqual(ns3.Items(), s3.Items()) {
+		t.Errorf("expected %v, got %v", s3.Items(), ns3.Items())
+	}
+
 	type contained struct {
 		Field string      `json:"Field"`
 		Set   Set[string] `json:"Set"`
@@ -114,4 +124,5 @@ func TestSet(t *testing.T) {
 	if !(c.Set.Contains("abc") && s.Contains("cba") && s.Contains("bca")) {
 		t.Errorf("expected strings to be contained")
 	}
+
 }

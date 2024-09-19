@@ -97,3 +97,8 @@ func (c *Set[T]) UnmarshalJSON(data []byte) error {
 
 	return nil
 }
+
+func (s *Set[T]) MarshalJSON() ([]byte, error) {
+	items := s.Items()
+	return json.Marshal(items)
+}
