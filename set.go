@@ -19,8 +19,22 @@ func (s *Set[T]) withLock(f func()) {
 	f()
 }
 
+func (s *Set[T]) AddAll(values ...T) {
+	s.withLock(func() {
+		for _, v := range values {
+			s.internal[v] = struct{}{}
+		}
+	})
+}
+
+func (s *Set[T]) Unset(value T) {
+	s.withLock(func() { delete(s.internal, value) })
+}
+
 func (s *Set[T]) Add(value T) {
-	s.internal[value] = struct{}{}
+	s.withLock(func() {
+		s.internal[value] = struct{}{}
+	})
 }
 
 func (s *Set[T]) Contains(value T) bool {

@@ -46,4 +46,9 @@ func TestSet(t *testing.T) {
 	if s.Remove("non") != false {
 		t.Errorf("expected %s to be not contained", "non")
 	}
+
+	s.AddAll("kk", "k", "äää")
+	if !(s.Contains("kk") && s.Contains("k") && s.Contains("äää")) {
+		t.Errorf("expected %s,%s,%s to be contained after addAll", "kk", "k", "äää")
+	}
 }
