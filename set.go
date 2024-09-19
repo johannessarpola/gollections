@@ -1,6 +1,9 @@
 package gollections
 
-import "sync"
+import (
+	"encoding/json"
+	"sync"
+)
 
 // Set
 type Set[T comparable] struct {
@@ -68,4 +71,21 @@ func (s *Set[T]) All(yield func(int, T) bool) {
 
 func (s *Set[T]) Clear() {
 	s.internal = make(map[T]struct{})
+}
+
+func (c *Set[T]) UnmarshalJSON(data []byte) error {
+
+	if c.internal == nil {
+		c.internal = make(map[T]struct{})
+	}
+
+	var aux []T
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	c.AddAll(aux...)
+
+	return nil
 }

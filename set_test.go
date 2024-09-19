@@ -1,6 +1,9 @@
 package gollections
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+)
 
 func TestSet(t *testing.T) {
 
@@ -50,5 +53,58 @@ func TestSet(t *testing.T) {
 	s.AddAll("kk", "k", "äää")
 	if !(s.Contains("kk") && s.Contains("k") && s.Contains("äää")) {
 		t.Errorf("expected %s,%s,%s to be contained after addAll", "kk", "k", "äää")
+	}
+
+	var jsonStr = `
+	[
+		"abc", 
+		"cba", 
+		"bca"
+	]`
+
+	s2 := NewSet[string]()
+	err := json.Unmarshal([]byte(jsonStr), &s2)
+
+	if err != nil {
+		t.Errorf("expected %s to unmarshal json", jsonStr)
+	}
+
+	if !(s2.Contains("abc") && s.Contains("cba") && s.Contains("bca")) {
+		t.Errorf("expected strings to be contained")
+	}
+
+	if s2.Contains("") {
+		t.Errorf("contained string that should not be there")
+	}
+
+	type contained struct {
+		Field string      `json:"Field"`
+		Ids   Set[string] `json:"Ids"`
+	}
+
+	var jsonStr2 = `
+{
+	"Field" : "value",
+	"Ids" : [
+		"abc", 
+		"cba", 
+		"bca"
+	]
+}`
+
+	var c contained
+	err = json.Unmarshal([]byte(jsonStr2), &c)
+	if err != nil {
+		t.Errorf("expected %s to unmarshal json", jsonStr2)
+	}
+	if c.Field != "value" {
+		t.Errorf("expected Field to be %s but got %s", c.Field, "value")
+	}
+	if c.Ids.Size() != 3 {
+		t.Errorf("expected size to be %d ", 3)
+	}
+
+	if !(c.Ids.Contains("abc") && s.Contains("cba") && s.Contains("bca")) {
+		t.Errorf("expected strings to be contained")
 	}
 }
