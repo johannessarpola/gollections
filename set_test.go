@@ -2,7 +2,6 @@ package gollections
 
 import (
 	"encoding/json"
-	"reflect"
 	"testing"
 )
 
@@ -55,8 +54,10 @@ func TestSet(t *testing.T) {
 	want := []string{"kk", "k", "kek"}
 	s2.AddAll(want...)
 
-	if !reflect.DeepEqual(s2.Items(), want) {
-		t.Errorf("expected %v to be contained after addAll", want)
+	for _, v := range want {
+		if !s2.Contains(v) {
+			t.Errorf("expected %s to be contained", v)
+		}
 	}
 
 	var jsonStr = `
@@ -87,8 +88,14 @@ func TestSet(t *testing.T) {
 		t.Errorf("expected %s to marshal json", jsonStr)
 	}
 
-	if json.Unmarshal(jb, &ns3) != nil || !reflect.DeepEqual(ns3.Items(), s3.Items()) {
+	if json.Unmarshal(jb, &ns3) != nil || ns3.Size() != s3.Size() {
 		t.Errorf("expected %v, got %v", s3.Items(), ns3.Items())
+	}
+
+	for _, v := range ns3.Items() {
+		if !s3.Contains(v) {
+			t.Errorf("expected %s to be contained", v)
+		}
 	}
 
 	type contained struct {
