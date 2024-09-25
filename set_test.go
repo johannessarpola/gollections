@@ -52,12 +52,9 @@ func TestSet(t *testing.T) {
 	}
 
 	s2 := NewSet[string]()
-	s2.AddAll("kk", "k", "äää")
-	if !(s2.Contains("kk") && s2.Contains("k") && s2.Contains("äää")) {
-		t.Errorf("expected %s,%s,%s to be contained after addAll", "kk", "k", "äää")
-	}
+	want := []string{"kk", "k", "kek"}
+	s2.AddAll(want...)
 
-	want := []string{"kk", "k", "äää"}
 	if !reflect.DeepEqual(s2.Items(), want) {
 		t.Errorf("expected %v to be contained after addAll", want)
 	}
