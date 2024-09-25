@@ -1,7 +1,9 @@
 package gollections
 
 import (
+	"encoding/json"
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -185,6 +187,77 @@ func TestLinkedList1(t *testing.T) {
 
 	if !l2.Contains("abc") {
 		t.Errorf("expected original element to be contained but got %t", l2.Contains("abc"))
+	}
+
+}
+
+func TestLinkedList_UnmarshalJSON(t *testing.T) {
+	var jsonStr = `
+	[
+		"abc", 
+		"cba", 
+		"bca"
+	]`
+
+	ll := NewLinkedList[string]()
+	err := json.Unmarshal([]byte(jsonStr), &ll)
+
+	if err != nil {
+		t.Errorf("expected %s to unmarshal json", jsonStr)
+	}
+
+	if !(ll.Contains("abc") && ll.Contains("cba") && ll.Contains("bca")) {
+		t.Errorf("expected strings to be contained")
+	}
+
+	if ll.Contains("") {
+		t.Errorf("contained string that should not be there")
+	}
+
+	if ll.Size() != 3 {
+		t.Errorf("expected len to be 3 but got %d", ll.Size())
+	}
+
+	var ll2 LinkedList[string]
+	jb, err := json.Marshal(&ll)
+
+	if err != nil || len(jb) == 0 {
+		t.Errorf("expected %s to marshal json", jsonStr)
+	}
+
+	if json.Unmarshal(jb, &ll2) != nil || !reflect.DeepEqual(ll2.Items(), ll.Items()) {
+		t.Errorf("expected %v, got %v", ll.Items(), ll2.Items())
+	}
+
+	type contained struct {
+		Field string             `json:"field"`
+		List  LinkedList[string] `json:"list"`
+	}
+
+	var jsonStr2 = `
+{
+	"field" : "value",
+	"list" : [
+		"abc", 
+		"cba", 
+		"bca"
+	]
+}`
+
+	var c contained
+	err = json.Unmarshal([]byte(jsonStr2), &c)
+	if err != nil {
+		t.Errorf("expected %s to unmarshal json", jsonStr2)
+	}
+	if c.Field != "value" {
+		t.Errorf("expected Field to be %s but got %s", c.Field, "value")
+	}
+	if c.List.Size() != 3 {
+		t.Errorf("expected size to be %d ", 3)
+	}
+
+	if !(c.List.Contains("abc") && c.List.Contains("cba") && c.List.Contains("bca")) {
+		t.Errorf("expected strings to be contained")
 	}
 
 }

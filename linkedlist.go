@@ -393,7 +393,6 @@ func (l *LinkedList[T]) AddAll(items ...T) *LinkedList[T] {
 }
 
 func (l *LinkedList[T]) UnmarshalJSON(data []byte) error {
-	// TODO
 	var aux []T
 
 	if err := json.Unmarshal(data, &aux); err != nil {
@@ -406,7 +405,6 @@ func (l *LinkedList[T]) UnmarshalJSON(data []byte) error {
 }
 
 func (l *LinkedList[T]) MarshalJSON() ([]byte, error) {
-	// TODO
 	items := l.Items()
 	return json.Marshal(items)
 }

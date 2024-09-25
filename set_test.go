@@ -95,14 +95,14 @@ func TestSet(t *testing.T) {
 	}
 
 	type contained struct {
-		Field string      `json:"Field"`
-		Set   Set[string] `json:"Set"`
+		Field string      `json:"field"`
+		Set   Set[string] `json:"set"`
 	}
 
 	var jsonStr2 = `
 {
-	"Field" : "value",
-	"Set" : [
+	"field" : "value",
+	"set" : [
 		"abc", 
 		"cba", 
 		"bca"
@@ -121,7 +121,7 @@ func TestSet(t *testing.T) {
 		t.Errorf("expected size to be %d ", 3)
 	}
 
-	if !(c.Set.Contains("abc") && s.Contains("cba") && s.Contains("bca")) {
+	if !(c.Set.Contains("abc") && c.Set.Contains("cba") && c.Set.Contains("bca")) {
 		t.Errorf("expected strings to be contained")
 	}
 
