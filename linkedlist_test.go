@@ -167,4 +167,24 @@ func TestLinkedList1(t *testing.T) {
 	if _, b := l.GetFirst(); b != false {
 		t.Errorf("expected list to be empty but got %t", b)
 	}
+
+	l2 := NewLinkedList[string]()
+	l2.Append("abc")
+	sz2 := l2.Size()
+
+	additions := []string{"xxx", "yyy", "zzz"}
+	l2.AddAll(additions...)
+	if l2.Size() != sz2+len(additions) {
+		t.Errorf("expected len to be %d but got %d", sz2+len(additions), l2.Size())
+	}
+	for _, v := range additions {
+		if !l2.Contains(v) {
+			t.Errorf("expected element to be contained but got %t", l2.Contains(v))
+		}
+	}
+
+	if !l2.Contains("abc") {
+		t.Errorf("expected original element to be contained but got %t", l2.Contains("abc"))
+	}
+
 }

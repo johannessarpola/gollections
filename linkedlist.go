@@ -1,6 +1,7 @@
 package gollections
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -49,9 +50,9 @@ func NewLinkedList[T comparable]() LinkedList[T] {
 	}
 }
 
-func (r *LinkedList[T]) withLock(f func()) {
-	defer r.mu.Unlock()
-	r.mu.Lock()
+func (l *LinkedList[T]) withLock(f func()) {
+	defer l.mu.Unlock()
+	l.mu.Lock()
 	f()
 }
 
@@ -95,7 +96,28 @@ func (l *LinkedList[T]) Append(value T) {
 		}
 		current.next = &n
 	})
+}
 
+func join[T comparable](root *Node[T], another *Node[T]) *Node[T] {
+	if root == nil {
+		return another
+	}
+
+	last := root
+	for current := root; current != nil; current = current.next {
+		last = current
+	}
+
+	last.next = another
+	return root
+}
+
+func (l *LinkedList[T]) Join(another *LinkedList[T]) *LinkedList[T] {
+	l.withLock(func() {
+		l.head = join(l.head, another.head)
+	})
+
+	return l
 }
 
 func (l *LinkedList[T]) InsertAt(index int, value T) error {
@@ -335,9 +357,56 @@ func (l *LinkedList[T]) RemoveAt(idx int) (T, error) {
 	return v, err
 }
 
-func (r *LinkedList[T]) Clear() {
-	r.withLock(func() {
+func (l *LinkedList[T]) Clear() {
+	l.withLock(func() {
 		// this should detach head and trigger GC at some point
-		r.head = nil
+		l.head = nil
 	})
+}
+
+func (l *LinkedList[T]) Items() []T {
+	var rs []T
+	for _, s := range l.All {
+		rs = append(rs, s)
+	}
+	return rs
+}
+
+func (l *LinkedList[T]) AddAll(items ...T) *LinkedList[T] {
+
+	sl := NewLinkedList[T]()
+	cur := sl.head
+	if cur == nil && len(items) > 0 {
+		f := NewNode(items[0])
+		sl.head = &f
+		cur = sl.head
+		items = items[1:]
+	}
+
+	for _, item := range items {
+		n := NewNode(item)
+		cur.next = &n
+		cur = &n
+	}
+	l.Join(&sl)
+	return l
+}
+
+func (l *LinkedList[T]) UnmarshalJSON(data []byte) error {
+	// TODO
+	var aux []T
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	l.AddAll(aux...)
+
+	return nil
+}
+
+func (l *LinkedList[T]) MarshalJSON() ([]byte, error) {
+	// TODO
+	items := l.Items()
+	return json.Marshal(items)
 }
