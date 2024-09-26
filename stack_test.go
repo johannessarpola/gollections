@@ -151,7 +151,7 @@ func TestStack_PopAll(t *testing.T) {
 			}
 
 			if len(tt.want) == 0 && len(got) != 0 {
-				t.Errorf("PopAll() expected result to be empty but got %d", len(got))
+				t.Errorf("PopAll() = expected result to be empty but got %d", len(got))
 			}
 		})
 	}
