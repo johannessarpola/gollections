@@ -1,6 +1,7 @@
 package gollections
 
 import (
+	"encoding/json"
 	"reflect"
 	"sync"
 	"sync/atomic"
@@ -154,5 +155,47 @@ func TestStack_PopAll(t *testing.T) {
 				t.Errorf("PopAll() = expected result to be empty but got %d", len(got))
 			}
 		})
+	}
+}
+
+func TestStack_JsonMarshalling(t *testing.T) {
+	jsonStr := `[1, 2, 3]`
+	var stack Stack[int]
+	err := json.Unmarshal([]byte(jsonStr), &stack)
+	if err != nil {
+		t.Errorf("json.Unmarshal() error = %v", err)
+	}
+
+	popAll := stack.PopAll()
+	want := []int{3, 2, 1}
+	if !reflect.DeepEqual(popAll, want) {
+		t.Errorf("PopAll() = %v, want %v", popAll, want)
+	}
+
+	type contained struct {
+		Field string        `json:"field"`
+		Stack Stack[string] `json:"stack"`
+	}
+
+	want2 := []string{"bca", "cba", "abc"}
+	var jsonStr2 = `
+{
+	"field" : "value",
+	"stack" : ["abc", "cba", "bca"]
+}`
+
+	var c contained
+	err = json.Unmarshal([]byte(jsonStr2), &c)
+	if err != nil {
+		t.Errorf("json.Unmarshal() error = %v", err)
+	}
+
+	if c.Field != "value" {
+		t.Errorf("c.Field = %v, want %v", c.Field, "value")
+	}
+
+	popAll2 := c.Stack.PopAll()
+	if !reflect.DeepEqual(popAll2, want2) {
+		t.Errorf("PopAll() = %v, want %v", c.Stack.PopAll(), want2)
 	}
 }

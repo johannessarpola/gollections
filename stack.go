@@ -1,6 +1,8 @@
 package gollections
 
 import (
+	"encoding/json"
+	"slices"
 	"sync"
 )
 
@@ -107,7 +109,6 @@ func (s *Stack[T]) PopAll() []T {
 	return rs
 }
 
-/*
 func (s *Stack[T]) UnmarshalJSON(data []byte) error {
 	var aux []T
 
@@ -115,15 +116,13 @@ func (s *Stack[T]) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	s.AddAll(aux...)
+	s.PushAll(aux...)
 
 	return nil
 }
-*/
-/*
-func (s *Stack[T]) MarshalJSON() ([]byte, error) {
-	items := s.Items()
-	return json.Marshal(items)
-}
 
-*/
+func (s *Stack[T]) MarshalJSON() ([]byte, error) {
+	itemsReversed := s.PopAll()
+	slices.Reverse(itemsReversed)
+	return json.Marshal(itemsReversed)
+}
