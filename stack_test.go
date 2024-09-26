@@ -1,6 +1,7 @@
 package gollections
 
 import (
+	"reflect"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -126,4 +127,32 @@ func TestStack_ConcurrentPeek(t *testing.T) {
 		t.Errorf("expected top of stack to be 99, got %v", v)
 	}
 
+}
+
+func TestStack_PopAll(t *testing.T) {
+	type testCase[T comparable] struct {
+		name string
+		in   []T
+		want []T
+	}
+	tests := []testCase[int]{
+		{name: "popAll-1", in: []int{1, 2, 3}, want: []int{3, 2, 1}},
+		{name: "popAll-2", in: []int{}, want: []int{}},
+		{name: "popAll-3", in: []int{1}, want: []int{1}},
+		{name: "popAll-3", in: []int{6, 7, 8, 9, 10}, want: []int{10, 9, 8, 7, 6}},
+	}
+	for _, tt := range tests {
+		stack := NewStack[int]()
+		stack.PushAll(tt.in...)
+		t.Run(tt.name, func(t *testing.T) {
+			got := stack.PopAll()
+			if !reflect.DeepEqual(got, tt.want) && len(tt.want) > 0 {
+				t.Errorf("PopAll() = %v, want %v", got, tt.want)
+			}
+
+			if len(tt.want) == 0 && len(got) != 0 {
+				t.Errorf("PopAll() expected result to be empty but got %d", len(got))
+			}
+		})
+	}
 }

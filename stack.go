@@ -90,15 +90,24 @@ func (s *Stack[T]) PushAll(items ...T) {
 	})
 }
 
-/*
-func (s *Stack[T]) Items() []T {
-	var rs []T
-	for _, s := range s.All {
-		rs = append(rs, s)
+func (s *Stack[T]) PopAll() []T {
+	var (
+		rs       []T
+		iteratee T
+	)
+
+	ok := true
+	for ok {
+		iteratee, ok = s.Pop()
+		if ok {
+			rs = append(rs, iteratee)
+		}
 	}
+
 	return rs
 }
 
+/*
 func (s *Stack[T]) UnmarshalJSON(data []byte) error {
 	var aux []T
 
@@ -110,9 +119,11 @@ func (s *Stack[T]) UnmarshalJSON(data []byte) error {
 
 	return nil
 }
-
+*/
+/*
 func (s *Stack[T]) MarshalJSON() ([]byte, error) {
 	items := s.Items()
 	return json.Marshal(items)
 }
+
 */
