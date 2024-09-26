@@ -11,37 +11,37 @@ func TestUnorderedEquals(t *testing.T) {
 	}
 	tests := []testCase[int]{
 		{
-			name: "unorderdEquals-1",
+			name: "unorderedEquals-1",
 			arr1: []int{1, 2, 3},
 			arr2: []int{3, 2, 1},
 			want: true,
 		},
 		{
-			name: "unorderdEquals-2",
+			name: "unorderedEquals-2",
 			arr1: []int{1, 1, 1},
 			arr2: []int{2, 2, 2},
 			want: false,
 		},
 		{
-			name: "unorderdEquals-3",
+			name: "unorderedEquals-3",
 			arr1: []int{1},
 			arr2: []int{1},
 			want: true,
 		},
 		{
-			name: "unorderdEquals-4",
+			name: "unorderedEquals-4",
 			arr1: []int{1},
 			arr2: []int{1, 1},
 			want: false,
 		},
 		{
-			name: "unorderdEquals-5",
+			name: "unorderedEquals-5",
 			arr1: []int{},
 			arr2: []int{},
 			want: true,
 		},
 		{
-			name: "unorderdEquals-6",
+			name: "unorderedEquals-6",
 			arr1: []int{1},
 			arr2: []int{},
 			want: false,
