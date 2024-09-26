@@ -13,43 +13,43 @@ func NewStack[T comparable]() Stack[T] {
 	return Stack[T]{}
 }
 
-func (r *Stack[T]) withLock(f func()) {
-	defer r.mu.Unlock()
-	r.mu.Lock()
+func (s *Stack[T]) withLock(f func()) {
+	defer s.mu.Unlock()
+	s.mu.Lock()
 	f()
 }
 
-func (r *Stack[T]) Peek() (T, bool) {
+func (s *Stack[T]) Peek() (T, bool) {
 	var (
 		v T
 		b bool
 	)
-	r.withLock(func() {
-		if r.head != nil {
-			v, b = r.head.Get()
+	s.withLock(func() {
+		if s.head != nil {
+			v, b = s.head.Get()
 		}
 	})
 
 	return v, b
 }
 
-func (r *Stack[T]) Push(e T) {
-	r.withLock(func() {
+func (s *Stack[T]) Push(e T) {
+	s.withLock(func() {
 		n := NewNode(e)
-		n.next = r.head
-		r.head = &n
+		n.next = s.head
+		s.head = &n
 	})
 }
 
-func (r *Stack[T]) Pop() (T, bool) {
+func (s *Stack[T]) Pop() (T, bool) {
 	var (
 		v T
 		b bool
 	)
-	r.withLock(func() {
-		if r.head != nil {
-			h := r.head
-			r.head = h.next
+	s.withLock(func() {
+		if s.head != nil {
+			h := s.head
+			s.head = h.next
 			v, _ = h.Get()
 			b = true
 		}
@@ -57,10 +57,62 @@ func (r *Stack[T]) Pop() (T, bool) {
 	return v, b
 }
 
-func (q *Stack[T]) IsEmpty() bool {
+func (s *Stack[T]) IsEmpty() bool {
 	b := false
-	q.withLock(func() {
-		b = q.head == nil
+	s.withLock(func() {
+		b = s.head == nil
 	})
 	return b
 }
+
+func (s *Stack[T]) PushAll(items ...T) {
+	if len(items) == 0 {
+		return
+	}
+
+	first := NewNode(items[0])
+	iteratee := &first
+	rest := items[1:]
+
+	for _, item := range rest {
+		node := NewNode(item)
+		node.next = iteratee
+		iteratee = &node
+	}
+
+	s.withLock(func() {
+		if s.head == nil {
+			s.head = iteratee
+			return
+		}
+		iteratee.next = s.head
+		s.head = iteratee
+	})
+}
+
+/*
+func (s *Stack[T]) Items() []T {
+	var rs []T
+	for _, s := range s.All {
+		rs = append(rs, s)
+	}
+	return rs
+}
+
+func (s *Stack[T]) UnmarshalJSON(data []byte) error {
+	var aux []T
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	s.AddAll(aux...)
+
+	return nil
+}
+
+func (s *Stack[T]) MarshalJSON() ([]byte, error) {
+	items := s.Items()
+	return json.Marshal(items)
+}
+*/

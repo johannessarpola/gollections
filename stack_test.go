@@ -77,6 +77,22 @@ func TestStack_ConcurrentPushAndPop(t *testing.T) {
 	}
 }
 
+func TestStack_PushAll(t *testing.T) {
+	stack := NewStack[int]()
+	stack.PushAll(1, 2, 3)
+	if v, ok := stack.Pop(); v != 3 || !ok {
+		t.Errorf("expected popped value to be 1, got %v", v)
+	}
+
+	if v, ok := stack.Pop(); v != 2 || !ok {
+		t.Errorf("expected popped value to be 2, got %v", v)
+	}
+
+	if v, ok := stack.Pop(); v != 1 || !ok {
+		t.Errorf("expected popped value to be 1, got %v", v)
+	}
+}
+
 func TestStack_ConcurrentPeek(t *testing.T) {
 	stack := NewStack[int]()
 	var wg sync.WaitGroup
@@ -109,4 +125,5 @@ func TestStack_ConcurrentPeek(t *testing.T) {
 	if v, ok := stack.Peek(); v != 99 || !ok {
 		t.Errorf("expected top of stack to be 99, got %v", v)
 	}
+
 }
