@@ -411,7 +411,7 @@ type BinaryTreeJson[T any] struct {
 }
 
 func (bt *BinaryTree[T]) TraversalOrder() TraversalOrder {
-	to := s.traversalOrder
+	to := bt.traversalOrder
 	if bt.traversalOrder == "" {
 		to = DefaultTraversal
 	}
