@@ -311,3 +311,46 @@ func TestBinaryTree_Balance(t *testing.T) {
 		})
 	}
 }
+
+func TestBinaryTree_TraversalOrder(t *testing.T) {
+	type testCase struct {
+		name string
+		in   TraversalOrder
+		want TraversalOrder
+	}
+	tests := []testCase{
+		{
+			name: "to-1",
+			in:   PreOrder,
+			want: PreOrder,
+		},
+		{
+			name: "to-2",
+			in:   "",
+			want: PreOrder,
+		},
+		{
+			name: "to-3",
+			in:   PostOrder,
+			want: PostOrder,
+		},
+		{
+			name: "to-4",
+			in:   InOrder,
+			want: InOrder,
+		},
+		{
+			name: "to-5",
+			in:   LevelOrder,
+			want: LevelOrder,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			bt := NewBinaryTreeWithOrder[int](tt.in)
+			if got := bt.TraversalOrder(); got != tt.want {
+				t.Errorf("TraversalOrder() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
