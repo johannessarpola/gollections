@@ -2,6 +2,7 @@ package gollections
 
 import (
 	"cmp"
+	"encoding/json"
 	"fmt"
 	"slices"
 	"strings"
@@ -10,12 +11,45 @@ import (
 )
 
 type BinaryTree[T cmp.Ordered] struct {
-	head *Node[T]
-	mu   sync.Mutex
+	head           *Node[T]
+	mu             sync.Mutex
+	traversalOrder TraversalOrder // used for json
+}
+
+const DefaultTraversal TraversalOrder = PreOrder
+
+type TraversalOrder = string
+
+const (
+	InOrder    TraversalOrder = "inOrder"
+	PreOrder                  = "preOrder"
+	PostOrder                 = "postOrder"
+	LevelOrder                = "levelOrder"
+)
+
+func (bt *BinaryTree[T]) resolveTravelsalFunc(travelsalOrder TraversalOrder) func(yield func(int, T) bool) {
+	switch travelsalOrder {
+	case InOrder:
+		return bt.InOrder
+	case PreOrder:
+		return bt.PreOrder
+	case PostOrder:
+		return bt.Postorder
+	case LevelOrder:
+		return bt.LeverOrder
+	default:
+		panic(fmt.Sprintf("unknown travelsal order %v", travelsalOrder))
+	}
 }
 
 func NewBinaryTree[T cmp.Ordered]() BinaryTree[T] {
 	return BinaryTree[T]{}
+}
+
+func NewBinaryTreeWithOrder[T cmp.Ordered](order TraversalOrder) BinaryTree[T] {
+	return BinaryTree[T]{
+		traversalOrder: order,
+	}
 }
 
 func (bt *BinaryTree[T]) withLock(f func()) {
@@ -358,4 +392,51 @@ func (bt *BinaryTree[T]) visualizeNode(node *Node[T], prefix string, isTail bool
 	if hasNext {
 		bt.visualizeNode(node.next, childPrefix, true, sb)
 	}
+}
+
+func (bt *BinaryTree[T]) Items() []T {
+	f := bt.resolveTravelsalFunc(bt.TraversalOrder())
+
+	var items []T
+	for _, v := range f {
+		items = append(items, v)
+	}
+
+	return items
+}
+
+type BinaryTreeJson[T any] struct {
+	Data           []T            `json:"data"`
+	TraversalOrder TraversalOrder `json:"traversal_order"`
+}
+
+func (bt *BinaryTree[T]) TraversalOrder() TraversalOrder {
+	to := s.traversalOrder
+	if bt.traversalOrder == "" {
+		to = DefaultTraversal
+	}
+	return to
+}
+
+func (bt *BinaryTree[T]) UnmarshalJSON(data []byte) error {
+	var aux BinaryTreeJson[T]
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	bt.traversalOrder = aux.TraversalOrder
+	bt.Insert(aux.Data...)
+
+	return nil
+}
+
+func (bt *BinaryTree[T]) MarshalJSON() ([]byte, error) {
+	items := bt.Items()
+
+	aux := BinaryTreeJson[T]{
+		Data:           items,
+		TraversalOrder: bt.TraversalOrder(),
+	}
+	return json.Marshal(aux)
 }

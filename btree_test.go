@@ -32,30 +32,6 @@ func TestBasic(t *testing.T) {
 
 }
 
-type TravelsalOrder = string
-
-const (
-	InOrder    TravelsalOrder = "inOrder"
-	PreOrder                  = "preOrder"
-	PostOrder                 = "postOrder"
-	LevelOrder                = "levelOrder"
-)
-
-func (bt *BinaryTree[T]) resolveTravelsalFunc(travelsalOrder TravelsalOrder) func(yield func(int, T) bool) {
-	switch travelsalOrder {
-	case InOrder:
-		return bt.InOrder
-	case PreOrder:
-		return bt.PreOrder
-	case PostOrder:
-		return bt.Postorder
-	case LevelOrder:
-		return bt.LeverOrder
-	default:
-		panic(fmt.Sprintf("unknown travelsal order %v", travelsalOrder))
-	}
-}
-
 func TestSize(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -88,7 +64,7 @@ func TestInorder(t *testing.T) {
 		name     string
 		input    []int
 		expected []int
-		to       TravelsalOrder
+		to       TraversalOrder
 	}{
 		{name: "preOrder-1", input: []int{99, 77, 33, 101, 90}, expected: []int{99, 77, 33, 90, 101}, to: PreOrder},
 		{name: "preOrder-2", input: []int{1, 2, 3, 4, 5}, expected: []int{1, 2, 3, 4, 5}, to: PreOrder},
