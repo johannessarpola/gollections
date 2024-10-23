@@ -360,21 +360,32 @@ func TestBinaryTree_MarshalJSON(t *testing.T) {
 	type testCase struct {
 		name string
 		in   []int
+		to   TraversalOrder
 		want BinaryTreeJson[int]
 	}
 	tests := []testCase{
 		{
 			name: "marshal-1",
 			in:   []int{1, 2, 3, 4, 5},
+			to:   PreOrder,
 			want: BinaryTreeJson[int]{
 				Data:           []int{1, 2, 3, 4, 5},
+				TraversalOrder: "preOrder",
+			},
+		},
+		{
+			name: "marshal-2",
+			in:   []int{5, 3, 7, 2, 4, 6, 8},
+			to:   PreOrder,
+			want: BinaryTreeJson[int]{
+				Data:           []int{5, 3, 2, 4, 7, 6, 8},
 				TraversalOrder: "preOrder",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bt := NewBinaryTree[int]()
+			bt := NewBinaryTreeWithOrder[int](tt.to)
 			bt.Insert(tt.in...)
 
 			jsonTree, err := json.Marshal(&bt)
