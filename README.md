@@ -1,3 +1,3 @@
 # gollections
 
-library with bunch of concurrency safe collections
+library for different data structures, should handle concurrency
