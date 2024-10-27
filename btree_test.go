@@ -1,8 +1,10 @@
 package gollections
 
 import (
+	"cmp"
 	"encoding/json"
 	"fmt"
+	"github.com/johannessarpola/gollections/comps"
 	"reflect"
 	"testing"
 )
@@ -130,10 +132,10 @@ func TestInorder(t *testing.T) {
 	}
 }
 
-func max(i int, i2 int) bool {
+func maxp(i int, i2 int) bool {
 	return i > i2
 }
-func min(i int, i2 int) bool {
+func minp(i int, i2 int) bool {
 	return i < i2
 }
 
@@ -148,24 +150,24 @@ func TestFind(t *testing.T) {
 		comp  []comparison
 	}{
 		{name: "find-1", input: []int{99, 77, 33, 101, 90}, comp: []comparison{
-			{predicate: max, expected: 101},
-			{predicate: min, expected: 33},
+			{predicate: maxp, expected: 101},
+			{predicate: minp, expected: 33},
 		}},
 		{name: "find-2", input: []int{1, 2, 3, 4, 5}, comp: []comparison{
-			{predicate: max, expected: 5},
-			{predicate: min, expected: 1},
+			{predicate: maxp, expected: 5},
+			{predicate: minp, expected: 1},
 		}},
 		{name: "find-3", input: []int{5, 3, 7, 2, 4, 6, 8}, comp: []comparison{
-			{predicate: max, expected: 8},
-			{predicate: min, expected: 2},
+			{predicate: maxp, expected: 8},
+			{predicate: minp, expected: 2},
 		}},
 		{name: "find-4", input: []int{12, 8, 15, 5, 10, 13, 18}, comp: []comparison{
-			{predicate: max, expected: 18},
-			{predicate: min, expected: 5},
+			{predicate: maxp, expected: 18},
+			{predicate: minp, expected: 5},
 		}},
 		{name: "find-5", input: []int{}, comp: []comparison{
-			{predicate: max, expected: 0},
-			{predicate: min, expected: 0},
+			{predicate: maxp, expected: 0},
+			{predicate: minp, expected: 0},
 		}},
 	}
 	for _, test := range tests {
@@ -399,6 +401,72 @@ func TestBinaryTree_MarshalJSON(t *testing.T) {
 			if string(exp) != string(jsonTree) {
 				t.Errorf("MarshalJSON() got = %v, want %v", string(jsonTree), string(exp))
 			}
+		})
+	}
+}
+
+func TestBinaryTree_UnmarshalJSON(t *testing.T) {
+	type args[T any] struct {
+		data []T
+		to   TraversalOrder
+	}
+	type testCase[T cmp.Ordered] struct {
+		name    string
+		args    args[T]
+		wantErr bool
+	}
+	tests := []testCase[int]{
+		{
+			name: "unmarshal-1",
+			args: args[int]{
+				data: []int{1, 2, 3, 4, 5},
+				to:   PreOrder,
+			},
+			wantErr: false,
+		},
+		{
+			name: "unmarshal-2",
+			args: args[int]{
+				data: []int{3, 2, 1},
+				to:   InOrder,
+			},
+			wantErr: false,
+		},
+		{
+			name: "unmarshal-3",
+			args: args[int]{
+				data: []int{},
+				to:   LevelOrder,
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			jsond := BinaryTreeJson[int]{
+				Data:           tt.args.data,
+				TraversalOrder: tt.args.to,
+			}
+
+			d, err := json.Marshal(jsond)
+			if err != nil {
+				t.Fatal(err)
+			}
+			bt := NewBinaryTree[int]()
+			err = json.Unmarshal(d, &bt)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("UnmarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if !comps.UnorderedEquals(tt.args.data, bt.Items()) {
+				t.Errorf("UnmarshalJSON() got = %v, want %v", bt.Items(), tt.args.data)
+			}
+
+			if bt.TraversalOrder() != tt.args.to {
+				t.Errorf("UnmarshalJSON() got = %v, want %v", bt.TraversalOrder(), tt.args.to)
+			}
+
 		})
 	}
 }

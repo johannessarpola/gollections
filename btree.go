@@ -52,6 +52,12 @@ func NewBinaryTreeWithOrder[T cmp.Ordered](order TraversalOrder) BinaryTree[T] {
 	}
 }
 
+func NewBinaryTreeWithType[T cmp.Ordered](typeOf T, order TraversalOrder) BinaryTree[T] {
+	return BinaryTree[T]{
+		traversalOrder: order,
+	}
+}
+
 func (bt *BinaryTree[T]) withLock(f func()) {
 	defer bt.mu.Unlock()
 	bt.mu.Lock()
@@ -405,7 +411,7 @@ func (bt *BinaryTree[T]) Items() []T {
 	return items
 }
 
-type BinaryTreeJson[T any] struct {
+type BinaryTreeJson[T cmp.Ordered] struct {
 	Data           []T            `json:"data"`
 	TraversalOrder TraversalOrder `json:"traversal_order"`
 }
