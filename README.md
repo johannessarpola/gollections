@@ -1,3 +1,3 @@
 # gollections
 
-library for different data structures, should handle concurrency
+general purpose library with data structures for golang. 
