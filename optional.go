@@ -6,9 +6,14 @@ type Optional[T any] struct {
 	Exist bool
 }
 
-// NewOptional creates a new Optional with a value
-func NewOptional[T any](value T) Optional[T] {
+// NewExistingOptional wraps value into optional with Exist=true
+func NewExistingOptional[T any](value T) Optional[T] {
 	return Optional[T]{Value: value, Exist: true}
+}
+
+// NewOptional creates a new Optional with a value
+func NewOptional[T any](value T, exist bool) Optional[T] {
+	return Optional[T]{Value: value, Exist: exist}
 }
 
 // EmptyOptional creates an empty Optional

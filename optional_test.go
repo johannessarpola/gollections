@@ -19,7 +19,7 @@ func TestNewOptional(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			opt := NewOptional(tt.value)
+			opt := NewExistingOptional(tt.value)
 			if opt.Value != tt.value {
 				t.Errorf("NewOptional() got = %v, want %v", opt.Value, tt.value)
 			}
@@ -59,7 +59,7 @@ func TestIsPresent(t *testing.T) {
 	}{
 		{
 			name: "value is present",
-			opt:  NewOptional(5),
+			opt:  NewExistingOptional(5),
 			want: true,
 		},
 		{
@@ -87,7 +87,7 @@ func TestGet(t *testing.T) {
 	}{
 		{
 			name:      "value exists",
-			opt:       NewOptional(10),
+			opt:       NewExistingOptional(10),
 			want:      10,
 			wantPanic: false,
 		},
@@ -126,7 +126,7 @@ func TestGetOrDefault(t *testing.T) {
 	}{
 		{
 			name:         "value exists, return value",
-			opt:          NewOptional(10),
+			opt:          NewExistingOptional(10),
 			defaultValue: 0,
 			want:         10,
 		},
