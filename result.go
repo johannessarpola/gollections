@@ -45,6 +45,12 @@ func Wrap[T any](data T, err error) Result[T] {
 	return Result[T]{Val: data, Err: err}
 }
 
+// Wrap creates a new result from return values of function f.
+func WrapFunc[T any](f func() (T, error)) Result[T] {
+	d, e := f()
+	return Result[T]{Val: d, Err: e}
+}
+
 // Get returns the result as a tuple of value and error.
 func (r Result[T]) Get() (T, error) {
 	return r.Val, r.Err
@@ -95,7 +101,7 @@ func Map[T, U any](r Result[T], f func(T) U) Result[U] {
 }
 
 // MapError applies a transformation function to the error if the result is not ok.
-func MapError[T, U any](r Result[T], f func(error) error) Result[T] {
+func MapError[T any](r Result[T], f func(error) error) Result[T] {
 	if !r.OK() {
 		return Result[T]{Val: r.Val, Err: f(r.Err)}
 	}
