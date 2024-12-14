@@ -1,4 +1,4 @@
-package gollections
+package optional
 
 import (
 	"testing"
@@ -19,7 +19,7 @@ func TestNewOptional(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			opt := NewExistingOptional(tt.value)
+			opt := NewExisting(tt.value)
 			if opt.Value != tt.value {
 				t.Errorf("NewOptional() got = %v, want %v", opt.Value, tt.value)
 			}
@@ -43,7 +43,7 @@ func TestEmptyOptional(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			opt := EmptyOptional[int]()
+			opt := Empty[int]()
 			if opt.Exist != tt.wantExist {
 				t.Errorf("EmptyOptional() gotExist = %v, want %v", opt.Exist, tt.wantExist)
 			}
@@ -59,12 +59,12 @@ func TestIsPresent(t *testing.T) {
 	}{
 		{
 			name: "value is present",
-			opt:  NewExistingOptional(5),
+			opt:  NewExisting(5),
 			want: true,
 		},
 		{
 			name: "value is not present",
-			opt:  EmptyOptional[int](),
+			opt:  Empty[int](),
 			want: false,
 		},
 	}
@@ -87,13 +87,13 @@ func TestGet(t *testing.T) {
 	}{
 		{
 			name:      "value exists",
-			opt:       NewExistingOptional(10),
+			opt:       NewExisting(10),
 			want:      10,
 			wantPanic: false,
 		},
 		{
 			name:      "value does not exist",
-			opt:       EmptyOptional[int](),
+			opt:       Empty[int](),
 			wantPanic: true, // This will cause a panic.
 		},
 	}
@@ -126,13 +126,13 @@ func TestGetOrDefault(t *testing.T) {
 	}{
 		{
 			name:         "value exists, return value",
-			opt:          NewExistingOptional(10),
+			opt:          NewExisting(10),
 			defaultValue: 0,
 			want:         10,
 		},
 		{
 			name:         "value does not exist, return default",
-			opt:          EmptyOptional[int](),
+			opt:          Empty[int](),
 			defaultValue: 42,
 			want:         42,
 		},

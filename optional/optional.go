@@ -1,4 +1,4 @@
-package gollections
+package optional
 
 // Optional represents a value that may or may not exist
 type Optional[T any] struct {
@@ -6,23 +6,23 @@ type Optional[T any] struct {
 	Exist bool
 }
 
-// NewExistingOptional wraps value into optional with Exist=true
-func NewExistingOptional[T any](value T) Optional[T] {
+// NewExisting wraps value into optional with Exist=true
+func NewExisting[T any](value T) Optional[T] {
 	return Optional[T]{Value: value, Exist: true}
 }
 
-// NewOptional creates a new Optional with a value
-func NewOptional[T any](value T, exist bool) Optional[T] {
+// New creates a new Optional with a value
+func New[T any](value T, exist bool) Optional[T] {
 	return Optional[T]{Value: value, Exist: exist}
 }
 
-// EmptyOptional creates an empty Optional
-func EmptyOptional[T any]() Optional[T] {
+// Empty creates an empty Optional
+func Empty[T any]() Optional[T] {
 	return Optional[T]{Exist: false}
 }
 
-// NewOptString creates a new optional with value
-func NewOptString(val string) Optional[string] {
+// NewString creates a new optional with value
+func NewString(val string) Optional[string] {
 	return Optional[string]{
 		Value: val,
 		Exist: val != "",

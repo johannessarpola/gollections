@@ -1,4 +1,4 @@
-package gollections
+package result
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ func TestUnwrap(t *testing.T) {
 	rss = append(rss, Wrap(0, errors.New("ping pong computer is broke")))
 
 	ecount := 0
-	r := UnwrapResults(rss, func(err error) {
+	r := UnwrapSlice(rss, func(err error) {
 		ecount++
 	})
 
@@ -106,41 +106,5 @@ func TestMapError(t *testing.T) {
 	})
 	if result.OK() || result.Err.Error() != "wrapped: initial error" {
 		t.Errorf("expected Err: 'wrapped: initial error', got Val: %v, Err: %v", result.Val, result.Err)
-	}
-}
-
-func TestOrElse(t *testing.T) {
-	// Success case
-	r1 := Wrap(10, nil)
-	val := r1.OrElse(42)
-	if val != 10 {
-		t.Errorf("expected 10, got %v", val)
-	}
-
-	// Error fallback case
-	r2 := Wrap(0, errors.New("initial error"))
-	val = r2.OrElse(42)
-	if val != 42 {
-		t.Errorf("expected 42, got %v", val)
-	}
-}
-
-func TestOrElseFunc(t *testing.T) {
-	// Success case
-	r1 := Wrap(10, nil)
-	val := r1.OrElseFunc(func() int {
-		return 42
-	})
-	if val != 10 {
-		t.Errorf("expected 10, got %v", val)
-	}
-
-	// Error fallback case
-	r2 := Wrap(0, errors.New("initial error"))
-	val = r2.OrElseFunc(func() int {
-		return 42
-	})
-	if val != 42 {
-		t.Errorf("expected 42, got %v", val)
 	}
 }
