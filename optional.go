@@ -16,6 +16,14 @@ func EmptyOptional[T any]() Optional[T] {
 	return Optional[T]{Exist: false}
 }
 
+// NewOptString creates a new optional with value
+func NewOptString(val string) Optional[string] {
+	return Optional[string]{
+		Value: val,
+		Exist: val != "",
+	}
+}
+
 // IsPresent returns true if the value exists
 func (o Optional[T]) IsPresent() bool {
 	return o.Exist
