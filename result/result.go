@@ -10,6 +10,14 @@ func New[T any](val T, err error) Result[T] {
 	return Result[T]{val: val, err: err}
 }
 
+func NewOk[T any](val T) Result[T] {
+	return Result[T]{val: val, err: nil}
+}
+
+func NewErr[T any](err error) Result[T] {
+	return Result[T]{err: err}
+}
+
 // OK returns true if the result is ok.
 func (r Result[T]) OK() bool {
 	return r.Err() == nil
