@@ -55,8 +55,8 @@ func TestFlatMap(t *testing.T) {
 	result := FlatMap(r1, func(v int) Result[string] {
 		return Wrap(fmt.Sprintf("Value: %d", v), nil)
 	})
-	if !result.OK() || result.Val != "Value: 10" {
-		t.Errorf("expected Val: 'Value: 10', got Val: %v, Err: %v", result.Val, result.Err)
+	if !result.OK() || result.Value() != "Value: 10" {
+		t.Errorf("expected Val: 'Value: 10', got Val: %v, Err: %v", result.Value(), result.Err())
 	}
 
 	// Error propagation case
@@ -64,8 +64,8 @@ func TestFlatMap(t *testing.T) {
 	result = FlatMap(r2, func(v int) Result[string] {
 		return Wrap("This should not be executed", nil)
 	})
-	if result.OK() || result.Err.Error() != "initial error" {
-		t.Errorf("expected Err: 'initial error', got Val: %v, Err: %v", result.Val, result.Err)
+	if result.OK() || result.Error() != "initial error" {
+		t.Errorf("expected Err: 'initial error', got Val: %v, Err: %v", result.Value(), result.Err())
 	}
 }
 
@@ -75,8 +75,8 @@ func TestMap(t *testing.T) {
 	result := Map(r1, func(v int) string {
 		return fmt.Sprintf("Value: %d", v)
 	})
-	if !result.OK() || result.Val != "Value: 10" {
-		t.Errorf("expected Val: 'Value: 10', got Val: %v, Err: %v", result.Val, result.Err)
+	if !result.OK() || result.Value() != "Value: 10" {
+		t.Errorf("expected Val: 'Value: 10', got Val: %v, Err: %v", result.Value(), result.Err())
 	}
 
 	// Error propagation case
@@ -84,8 +84,8 @@ func TestMap(t *testing.T) {
 	result = Map(r2, func(v int) string {
 		return "This should not be executed"
 	})
-	if result.OK() || result.Err.Error() != "initial error" {
-		t.Errorf("expected Err: 'initial error', got Val: %v, Err: %v", result.Val, result.Err)
+	if result.OK() || result.Error() != "initial error" {
+		t.Errorf("expected Err: 'initial error', got Val: %v, Err: %v", result.Value(), result.Err())
 	}
 }
 
@@ -95,8 +95,8 @@ func TestMapError(t *testing.T) {
 	result := MapError(r1, func(err error) error {
 		return fmt.Errorf("wrapped: %w", err)
 	})
-	if !result.OK() || result.Val != 10 {
-		t.Errorf("expected Val: 10, got Val: %v, Err: %v", result.Val, result.Err)
+	if !result.OK() || result.Value() != 10 {
+		t.Errorf("expected Val: 10, got Val: %v, Err: %v", result.Value(), result.Err())
 	}
 
 	// Error transformation case
@@ -104,7 +104,7 @@ func TestMapError(t *testing.T) {
 	result = MapError(r2, func(err error) error {
 		return fmt.Errorf("wrapped: %w", err)
 	})
-	if result.OK() || result.Err.Error() != "wrapped: initial error" {
-		t.Errorf("expected Err: 'wrapped: initial error', got Val: %v, Err: %v", result.Val, result.Err)
+	if result.OK() || result.Error() != "wrapped: initial error" {
+		t.Errorf("expected Err: 'wrapped: initial error', got Val: %v, Err: %v", result.Value(), result.Err())
 	}
 }
