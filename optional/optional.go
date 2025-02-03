@@ -1,5 +1,9 @@
 package optional
 
+import (
+	"encoding/json"
+)
+
 // Optional represents a value that may or may not exist
 type Optional[T any] struct {
 	Value T
@@ -48,4 +52,23 @@ func (o Optional[T]) GetOrDefault(defaultValue T) T {
 		return o.Value
 	}
 	return defaultValue
+}
+
+func (o *Optional[T]) MarshalJSON() ([]byte, error) {
+	if !o.Exist {
+		return []byte("null"), nil // Omitting the field entirely
+	}
+	return json.Marshal(o.Value)
+}
+
+func (o *Optional[T]) UnmarshalJSON(data []byte) error {
+	if len(data) == 0 || string(data) == "null" {
+		o.Exist = true // Field was missing, set Exist = true
+		var zero T
+		o.Value = zero
+		return nil
+	}
+
+	o.Exist = true
+	return json.Unmarshal(data, &o.Value)
 }

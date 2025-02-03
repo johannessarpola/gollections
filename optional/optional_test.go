@@ -1,6 +1,7 @@
 package optional
 
 import (
+	"encoding/json"
 	"testing"
 )
 
@@ -142,6 +143,140 @@ func TestGetOrDefault(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.opt.GetOrDefault(tt.defaultValue); got != tt.want {
 				t.Errorf("GetOrDefault() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestOptionalMarshalJSON(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    Optional[any]
+		expected string
+	}{
+		{
+			"String value",
+			New[any]("hello", true),
+			`"hello"`,
+		},
+		{
+			"Int value",
+			New[any](42, true),
+			`42`,
+		},
+		{
+			"Bool value",
+			New[any](true, true),
+			`true`,
+		},
+		{
+			"Zero int but Exist true",
+			New[any](0, true),
+			`0`,
+		},
+		{
+			"Empty string but Exist true",
+			New[any]("", false),
+			"null",
+		},
+		{
+			"Exist false (should be omitted)",
+			New[any]("", false),
+			"null",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			data, err := json.Marshal(&tt.input)
+			if err != nil {
+				t.Fatalf("Failed to marshal: %v", err)
+			}
+			if string(data) != tt.expected {
+				t.Errorf("Expected %s, got %s", tt.expected, data)
+			}
+		})
+	}
+}
+
+func TestOptionalUnmarshalJSON(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected Optional[any]
+	}{
+		{"String present", `"Hello"`, Optional[any]{Value: "Hello", Exist: true}},
+		{"Int present", `42`, Optional[any]{Value: float64(42), Exist: true}}, // JSON numbers decode to float64 by default
+		{"Bool present", `true`, Optional[any]{Value: true, Exist: true}},
+		{"Zero int", `0`, Optional[any]{Value: float64(0), Exist: true}},
+		{"Empty string", `""`, Optional[any]{Value: "", Exist: true}},
+		{"Null (missing field equivalent)", `null`, Optional[any]{Value: nil, Exist: true}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var result Optional[any]
+			err := json.Unmarshal([]byte(tt.input), &result)
+			if err != nil {
+				t.Fatalf("Failed to unmarshal: %v", err)
+			}
+			if result.Exist != tt.expected.Exist || result.Value != tt.expected.Value {
+				t.Errorf("Expected %+v, got %+v", tt.expected, result)
+			}
+		})
+	}
+}
+
+type Parent struct {
+	Name   Optional[string]
+	Age    Optional[int]
+	Height Optional[float64]
+}
+
+func TestParentStructUnmarshal(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected Parent
+	}{
+		{
+			"All fields present",
+			`{"name":"Alice","age":30}`,
+			Parent{
+				Name:   Optional[string]{Value: "Alice", Exist: true},
+				Age:    Optional[int]{Value: 30, Exist: true},
+				Height: Optional[float64]{Exist: false},
+			},
+		},
+		{
+			"Missing age field",
+			`{"name":"Alice"}`,
+			Parent{
+				Name:   Optional[string]{Value: "Alice", Exist: true},
+				Age:    Optional[int]{Exist: false},
+				Height: Optional[float64]{Exist: false},
+			},
+		},
+		{
+			"Empty JSON (all fields missing)",
+			`{}`,
+			Parent{
+				Name:   Optional[string]{Exist: false},
+				Age:    Optional[int]{Exist: false},
+				Height: Optional[float64]{Exist: false},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var result Parent
+			err := json.Unmarshal([]byte(tt.input), &result)
+			if err != nil {
+				t.Fatalf("Failed to unmarshal: %v", err)
+			}
+			if result.Name != tt.expected.Name || result.Age != tt.expected.Age {
+				t.Errorf("Expected %+v, got %+v", tt.expected, result)
 			}
 		})
 	}
