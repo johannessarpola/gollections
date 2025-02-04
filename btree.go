@@ -22,9 +22,9 @@ type TraversalOrder = string
 
 const (
 	InOrder    TraversalOrder = "inOrder"
-	PreOrder                  = "preOrder"
-	PostOrder                 = "postOrder"
-	LevelOrder                = "levelOrder"
+	PreOrder   TraversalOrder = "preOrder"
+	PostOrder  TraversalOrder = "postOrder"
+	LevelOrder TraversalOrder = "levelOrder"
 )
 
 func (bt *BinaryTree[T]) resolveTravelsalFunc(travelsalOrder TraversalOrder) func(yield func(int, T) bool) {

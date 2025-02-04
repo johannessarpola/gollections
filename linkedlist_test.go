@@ -61,7 +61,7 @@ func TestLinkedList1(t *testing.T) {
 
 	count := 0
 	size := l.Size()
-	for _, _ = range l.All {
+	for range l.All {
 		count++
 	}
 

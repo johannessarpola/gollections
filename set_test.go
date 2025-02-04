@@ -33,7 +33,7 @@ func TestSet(t *testing.T) {
 	}
 
 	cnt := 0
-	for _, _ = range s.All {
+	for range s.All {
 		cnt++
 	}
 
