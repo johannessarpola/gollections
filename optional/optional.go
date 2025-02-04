@@ -25,6 +25,18 @@ func Empty[T any]() Optional[T] {
 	return Optional[T]{Exist: false}
 }
 
+func EmptyInt() Optional[int] {
+	return Empty[int]()
+}
+
+func EmptyString() Optional[string] {
+	return Empty[string]()
+}
+
+func Some[T any](val T) Optional[T] {
+	return NewExisting(val)
+}
+
 // NewString creates a new optional with value
 func NewString(val string) Optional[string] {
 	return Optional[string]{
