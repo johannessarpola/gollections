@@ -10,11 +10,6 @@ type Optional[T any] struct {
 	Exist bool
 }
 
-// NewExisting wraps value into optional with Exist=true
-func NewExisting[T any](value T) Optional[T] {
-	return Optional[T]{Value: value, Exist: true}
-}
-
 // New creates a new Optional with a value
 func New[T any](value T, exist bool) Optional[T] {
 	return Optional[T]{Value: value, Exist: exist}
@@ -23,26 +18,6 @@ func New[T any](value T, exist bool) Optional[T] {
 // Empty creates an empty Optional
 func Empty[T any]() Optional[T] {
 	return Optional[T]{Exist: false}
-}
-
-func EmptyInt() Optional[int] {
-	return Empty[int]()
-}
-
-func EmptyString() Optional[string] {
-	return Empty[string]()
-}
-
-func Some[T any](val T) Optional[T] {
-	return NewExisting(val)
-}
-
-// NewString creates a new optional with value
-func NewString(val string) Optional[string] {
-	return Optional[string]{
-		Value: val,
-		Exist: val != "",
-	}
 }
 
 // IsPresent returns true if the value exists
