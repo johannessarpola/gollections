@@ -62,7 +62,7 @@ func TestThen(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), tc.to)
 			defer cancel()
 			start := time.Now()
-			p := New[int]().Resolve(tc.input).Then(ctx, tc.transform)
+			p := New[int]().Resolve(ctx, tc.input).Then(ctx, tc.transform)
 			rs := p.Wait()
 			if tc.wantErr {
 				assert.Error(t, rs.Err())

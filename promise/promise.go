@@ -61,7 +61,7 @@ func (p Promise[T]) Then(ctx context.Context, f func(context.Context, T) result.
 		}()
 		return transform
 	}
-	return p.Reject(r.Err())
+	return p.Reject(ctx, r.Err())
 }
 
 func (p Promise[T]) Wait() result.Result[T] {
