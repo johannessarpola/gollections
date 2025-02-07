@@ -14,14 +14,22 @@ func New[T any]() Promise[T] {
 	return c
 }
 
-func (p Promise[T]) Resolve(value T) Promise[T] {
-	p <- result.NewOk(value)
-	return p
+func (p Promise[T]) Resolve(ctx context.Context, value T) Promise[T] {
+	select {
+	case <-ctx.Done():
+		return p
+	case p <- result.NewOk(value):
+		return p
+	}
 }
 
-func (p Promise[T]) Reject(err error) Promise[T] {
-	p <- result.NewErr[T](err)
-	return p
+func (p Promise[T]) Reject(ctx context.Context, err error) Promise[T] {
+	select {
+	case <-ctx.Done():
+		return p
+	case p <- result.NewErr[T](err):
+		return p
+	}
 }
 
 func (p Promise[T]) getWithinContext(ctx context.Context) result.Result[T] {
