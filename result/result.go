@@ -41,6 +41,14 @@ func (r Result[T]) Error() string {
 	return ""
 }
 
+// Calls `f` if value is present
+func (r Result[T]) IfPresent(f func(T) Result[T]) Result[T] {
+	if r.OK() {
+		return f(r.val)
+	}
+	return r
+}
+
 // OrElse returns the value or a fallback value if the Result is not ok.
 func (r Result[T]) OrElse(fallback T) T {
 	if r.OK() {
