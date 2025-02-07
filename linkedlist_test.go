@@ -61,7 +61,7 @@ func TestLinkedList1(t *testing.T) {
 
 	count := 0
 	size := l.Size()
-	for _, _ = range l.All {
+	for range l.All {
 		count++
 	}
 
@@ -188,11 +188,10 @@ func TestLinkedList1(t *testing.T) {
 	if !l2.Contains("abc") {
 		t.Errorf("expected original element to be contained but got %t", l2.Contains("abc"))
 	}
-
 }
 
 func TestLinkedList_UnmarshalJSON(t *testing.T) {
-	var jsonStr = `
+	jsonStr := `
 	[
 		"abc", 
 		"cba", 
@@ -201,7 +200,6 @@ func TestLinkedList_UnmarshalJSON(t *testing.T) {
 
 	ll := NewLinkedList[string]()
 	err := json.Unmarshal([]byte(jsonStr), &ll)
-
 	if err != nil {
 		t.Errorf("expected %s to unmarshal json", jsonStr)
 	}
@@ -234,7 +232,7 @@ func TestLinkedList_UnmarshalJSON(t *testing.T) {
 		List  LinkedList[string] `json:"list"`
 	}
 
-	var jsonStr2 = `
+	jsonStr2 := `
 {
 	"field" : "value",
 	"list" : [
@@ -259,5 +257,4 @@ func TestLinkedList_UnmarshalJSON(t *testing.T) {
 	if !(c.List.Contains("abc") && c.List.Contains("cba") && c.List.Contains("bca")) {
 		t.Errorf("expected strings to be contained")
 	}
-
 }
