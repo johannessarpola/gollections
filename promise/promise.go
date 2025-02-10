@@ -14,6 +14,12 @@ func New[T any]() Promise[T] {
 	return c
 }
 
+func Resolve[T any](value T) Promise[T] {
+	p := New[T]()
+	p <- result.NewOk(value)
+	return p
+}
+
 func (p Promise[T]) Resolve(ctx context.Context, value T) Promise[T] {
 	select {
 	case <-ctx.Done():
@@ -21,6 +27,12 @@ func (p Promise[T]) Resolve(ctx context.Context, value T) Promise[T] {
 	case p <- result.NewOk(value):
 		return p
 	}
+}
+
+func Reject[T any](err error) Promise[T] {
+	p := New[T]()
+	p <- result.NewErr[T](err)
+	return p
 }
 
 func (p Promise[T]) Reject(ctx context.Context, err error) Promise[T] {

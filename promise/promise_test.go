@@ -74,3 +74,61 @@ func TestThen(t *testing.T) {
 		})
 	}
 }
+
+func TestPromise_Catch(t *testing.T) {
+	tests := []struct {
+		name      string
+		promise   Promise[string]
+		expectErr bool
+		expected  string
+		errorMsg  string
+	}{
+		{
+			name:      "Successful promise should not trigger Catch",
+			promise:   Resolve("Hello, World!"),
+			expectErr: false,
+			expected:  "Hello, World!",
+		},
+		{
+			name:      "Failed promise should trigger Catch",
+			promise:   Reject[string](errors.New("Something went wrong")),
+			expectErr: true,
+			errorMsg:  "Something went wrong",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var caughtError error
+			var resultValue string
+
+			// Attach Catch to promise
+			done := make(chan struct{})
+			tt.promise.Catch(func(err error) {
+				caughtError = err
+				close(done)
+			})
+
+			// Read from the promise
+			select {
+			case res := <-tt.promise:
+				if res.OK() {
+					resultValue = res.Value()
+				}
+				if res.IsErr() {
+					caughtError = res.Err()
+				}
+			case <-time.After(1 * time.Second):
+				t.Fatal("Test timed out")
+			}
+
+			if tt.expectErr {
+				assert.Error(t, caughtError)
+				assert.Equal(t, tt.errorMsg, caughtError.Error())
+			} else {
+				assert.NoError(t, caughtError)
+				assert.Equal(t, tt.expected, resultValue)
+			}
+		})
+	}
+}
