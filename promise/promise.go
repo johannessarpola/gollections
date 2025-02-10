@@ -64,6 +64,17 @@ func (p Promise[T]) Then(ctx context.Context, f func(context.Context, T) result.
 	return p.Reject(ctx, r.Err())
 }
 
+// Catch executes a function if the promise results in an error.
+func (p Promise[T]) Catch(fn func(error)) Promise[T] {
+	go func() {
+		res := <-p
+		if res.IsErr() {
+			fn(res.Err())
+		}
+	}()
+	return p
+}
+
 func (p Promise[T]) Wait() result.Result[T] {
 	return <-p
 }

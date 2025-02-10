@@ -34,6 +34,11 @@ func (r Result[T]) Err() error {
 }
 
 // Error Standard error interface
+func (r Result[T]) IsErr() bool {
+	return r.err != nil
+}
+
+// Error Standard error interface
 func (r Result[T]) Error() string {
 	if r.Err() != nil {
 		return r.Err().Error()
