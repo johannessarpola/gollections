@@ -132,3 +132,87 @@ func TestPromise_Catch(t *testing.T) {
 		})
 	}
 }
+
+func TestAll(t *testing.T) {
+	type testCase struct {
+		name       string
+		promises   []Promise[int]
+		expected   []result.Result[int]
+		shouldFail bool
+	}
+
+	testCases := map[string]testCase{
+		"all-success": {
+			promises: []Promise[int]{
+				Resolve(1),
+				Resolve(2),
+				Resolve(3),
+			},
+			expected: []result.Result[int]{
+				result.NewOk(1),
+				result.NewOk(2),
+				result.NewOk(3),
+			},
+		},
+		"one-error": {
+			promises: []Promise[int]{
+				Resolve(1),
+				Reject[int](errors.New("error")),
+				Resolve(3),
+			},
+			expected: []result.Result[int]{
+				result.NewOk(1),
+				result.NewErr[int](errors.New("error")),
+				result.NewOk(3),
+			},
+			shouldFail: false,
+		},
+		"all-error": {
+			promises: []Promise[int]{
+				Reject[int](errors.New("error")),
+				Reject[int](errors.New("another error")),
+			},
+			expected: []result.Result[int]{
+				result.NewErr[int](errors.New("error")),
+				result.NewErr[int](errors.New("another error")),
+			},
+			shouldFail: false,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			rssr := All(context.TODO(), tc.promises...).Wait()
+			if rssr.Err() != nil && tc.shouldFail == false {
+				t.Errorf("expected no error, got %v", rssr.Err())
+			}
+
+			rss := rssr.Value()
+			if len(rss) != len(tc.expected) {
+				t.Errorf("expected %d results, got %d", len(tc.expected), len(rss))
+			}
+			for _, rs := range rss {
+				found := false
+				v, e := rs.Get()
+				for _, exp := range tc.expected {
+					ev, ee := exp.Get()
+					if v == ev {
+						found = true
+						break
+					}
+					if ee != nil && e != nil {
+						e1 := ee.Error()
+						e2 := e.Error()
+						if e1 == e2 {
+							found = true
+							break
+						}
+					}
+				}
+				if !found {
+					t.Errorf("could not find stuff")
+				}
+			}
+		})
+	}
+}
