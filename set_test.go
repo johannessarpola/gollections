@@ -6,7 +6,6 @@ import (
 )
 
 func TestSet(t *testing.T) {
-
 	s := NewSet[string]()
 	s.Add("abc")
 	s.Add("cba")
@@ -60,7 +59,7 @@ func TestSet(t *testing.T) {
 		}
 	}
 
-	var jsonStr = `
+	jsonStr := `
 	[
 		"abc", 
 		"cba", 
@@ -69,7 +68,6 @@ func TestSet(t *testing.T) {
 
 	s3 := NewSet[string]()
 	err := json.Unmarshal([]byte(jsonStr), &s3)
-
 	if err != nil {
 		t.Errorf("expected %s to unmarshal json", jsonStr)
 	}
@@ -103,7 +101,7 @@ func TestSet(t *testing.T) {
 		Set   Set[string] `json:"set"`
 	}
 
-	var jsonStr2 = `
+	jsonStr2 := `
 {
 	"field" : "value",
 	"set" : [
@@ -128,5 +126,4 @@ func TestSet(t *testing.T) {
 	if !(c.Set.Contains("abc") && c.Set.Contains("cba") && c.Set.Contains("bca")) {
 		t.Errorf("expected strings to be contained")
 	}
-
 }

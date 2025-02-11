@@ -34,11 +34,24 @@ func (r Result[T]) Err() error {
 }
 
 // Error Standard error interface
+func (r Result[T]) IsErr() bool {
+	return r.err != nil
+}
+
+// Error Standard error interface
 func (r Result[T]) Error() string {
 	if r.Err() != nil {
 		return r.Err().Error()
 	}
 	return ""
+}
+
+// Calls `f` if value is present
+func (r Result[T]) IfPresent(f func(T) Result[T]) Result[T] {
+	if r.OK() {
+		return f(r.val)
+	}
+	return r
 }
 
 // OrElse returns the value or a fallback value if the Result is not ok.
