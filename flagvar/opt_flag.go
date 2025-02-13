@@ -23,7 +23,6 @@ var (
 /*
  * funny thing about type system is that you need to alias bool heere.
  * Otherwise it works in the BoolFlag() as wotherwise it is handled as a alias for a parameter.
- * So in a sense you need to separate the the two.
  */
 type boolean = bool
 
