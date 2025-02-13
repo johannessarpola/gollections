@@ -25,6 +25,13 @@ func (o Optional[T]) IsPresent() bool {
 	return o.Exist
 }
 
+// IfPresent param func is called if value exists.
+func (o Optional[T]) IfPresent(f func(v T)) {
+	if o.IsPresent() {
+		f(o.Get())
+	}
+}
+
 // Get returns the value if it exists, otherwise it panics
 func (o Optional[T]) Get() T {
 	if !o.Exist {

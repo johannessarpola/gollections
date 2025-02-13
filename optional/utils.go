@@ -17,6 +17,10 @@ func Some[T any](val T) Optional[T] {
 	return NewExisting(val)
 }
 
+func None[T any]() Optional[T] {
+	return Empty[T]()
+}
+
 // NewString creates a new optional with value
 func NewString(val string) Optional[string] {
 	return Optional[string]{
