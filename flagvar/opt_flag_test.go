@@ -72,9 +72,9 @@ func TestOptionalFlag(t *testing.T) {
 			// Reset flag set for each test case
 			fs := flag.NewFlagSet("test", flag.ContinueOnError)
 
-			var strFlag OptionalFlag[string]
-			var intFlag OptionalFlag[int]
-			var boolFlag OptionalFlag[bool]
+			var strFlag OptFlag[string]
+			var intFlag OptFlag[int]
+			var boolFlag OptFlag[bool]
 
 			fs.Var(&strFlag, "name", "A string flag")
 			fs.Var(&intFlag, "age", "An integer flag")
@@ -87,18 +87,18 @@ func TestOptionalFlag(t *testing.T) {
 			}
 
 			// Validate string flag
-			if strFlag.opt != tt.expectStr {
-				t.Errorf("expected string flag = %v, got %v", tt.expectStr, strFlag.opt)
+			if strFlag.Value != tt.expectStr {
+				t.Errorf("expected string flag = %v, got %v", tt.expectStr, strFlag.Value)
 			}
 
 			// Validate int flag
-			if intFlag.opt != tt.expectInt {
-				t.Errorf("expected int flag = %v, got %v", tt.expectInt, intFlag.opt)
+			if intFlag.Value != tt.expectInt {
+				t.Errorf("expected int flag = %v, got %v", tt.expectInt, intFlag.Value)
 			}
 
 			// Validate bool flag
-			if boolFlag.opt != tt.expectBool {
-				t.Errorf("expected bool flag = %v, got %v", tt.expectBool, boolFlag.opt)
+			if boolFlag.Value != tt.expectBool {
+				t.Errorf("expected bool flag = %v, got %v", tt.expectBool, boolFlag.Value)
 			}
 		})
 	}
